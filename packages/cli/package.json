@@ -1,0 +1,57 @@
+{
+  "name": "@castari/cli",
+  "version": "0.1.0",
+  "description": "Castari CLI - Deploy AI agents with one command",
+  "author": "Castari <hello@castari.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/castari/cli.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://castari.dev",
+  "bugs": {
+    "url": "https://github.com/castari/cli/issues"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "cast": "./bin/cast.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@castari/sdk": "workspace:*",
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.0",
+    "commander": "^12.0.0",
+    "open": "^10.0.0",
+    "ora": "^8.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "castari",
+    "ai",
+    "agents",
+    "cli",
+    "claude",
+    "anthropic",
+    "llm",
+    "deploy"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "@castari/sdk",
+  "version": "0.1.0",
+  "description": "Official Castari SDK for TypeScript and Node.js",
+  "author": "Castari <hello@castari.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/castari/cli.git",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://castari.dev",
+  "bugs": {
+    "url": "https://github.com/castari/cli/issues"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "yaml": "^2.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "castari",
+    "ai",
+    "agents",
+    "sdk",
+    "claude",
+    "anthropic",
+    "llm"
+  ]
+}

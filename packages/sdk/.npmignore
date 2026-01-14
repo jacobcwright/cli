@@ -1,0 +1,15 @@
+# Source files
+src/
+
+# Tests
+**/__tests__/
+**/*.test.ts
+**/*.spec.ts
+
+# TypeScript config
+tsconfig.json
+
+# Development files
+.eslintrc*
+.prettierrc*
+*.log

@@ -1,6 +1,6 @@
 {
   "name": "@castari/sdk",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Official Castari SDK for TypeScript and Node.js",
   "author": "Castari <hello@castari.dev>",
   "license": "MIT",
@@ -9,7 +9,7 @@
     "url": "https://github.com/castari/cli.git",
     "directory": "packages/sdk"
   },
-  "homepage": "https://castari.dev",
+  "homepage": "https://github.com/castari/cli",
   "bugs": {
     "url": "https://github.com/castari/cli/issues"
   },

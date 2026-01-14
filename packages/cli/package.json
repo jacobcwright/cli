@@ -1,6 +1,6 @@
 {
   "name": "@castari/cli",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Castari CLI - Deploy AI agents with one command",
   "author": "Castari <hello@castari.dev>",
   "license": "MIT",
@@ -9,7 +9,7 @@
     "url": "https://github.com/castari/cli.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://castari.dev",
+  "homepage": "https://github.com/castari/cli",
   "bugs": {
     "url": "https://github.com/castari/cli/issues"
   },
@@ -39,7 +39,8 @@
   },
   "files": [
     "dist",
-    "bin"
+    "bin",
+    "README.md"
   ],
   "engines": {
     "node": ">=18.0.0"

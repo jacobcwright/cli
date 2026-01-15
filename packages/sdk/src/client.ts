@@ -1,10 +1,10 @@
-import { HttpClient } from './http.js';
-import { AgentsAPI } from './agents.js';
-import { UsageAPI } from './usage.js';
-import { AuthAPI } from './auth.js';
-import { getApiUrl, getAuth } from './config.js';
-import { AuthenticationError } from './errors.js';
-import type { CastariClientOptions } from './types.js';
+import { HttpClient } from './http.js'
+import { AgentsAPI } from './agents.js'
+import { UsageAPI } from './usage.js'
+import { AuthAPI } from './auth.js'
+import { getApiUrl, getAuth } from './config.js'
+import { AuthenticationError } from './errors.js'
+import type { CastariClientOptions } from './types.js'
 
 /**
  * Main client for interacting with the Castari API
@@ -30,18 +30,18 @@ import type { CastariClientOptions } from './types.js';
  * ```
  */
 export class CastariClient {
-  private httpClient: HttpClient;
-  private initialized = false;
-  private initPromise: Promise<void> | null = null;
+  private httpClient: HttpClient
+  private initialized = false
+  private initPromise: Promise<void> | null = null
 
   /** API for managing agents */
-  readonly agents: AgentsAPI;
+  readonly agents: AgentsAPI
 
   /** API for accessing usage statistics */
-  readonly usage: UsageAPI;
+  readonly usage: UsageAPI
 
   /** API for authentication operations */
-  readonly auth: AuthAPI;
+  readonly auth: AuthAPI
 
   /**
    * Create a new Castari client
@@ -50,22 +50,22 @@ export class CastariClient {
   constructor(private options: CastariClientOptions = {}) {
     // Create HTTP client with provided or default base URL
     this.httpClient = new HttpClient({
-      baseUrl: options.baseUrl || 'https://web-13239-04c55b73-wp4aqyqk.onporter.run',
-    });
+      baseUrl: options.baseUrl || 'https://api.castari.com',
+    })
 
     // Set auth if provided directly
     if (options.apiKey) {
-      this.httpClient.setAuth('api_key', options.apiKey);
-      this.initialized = true;
+      this.httpClient.setAuth('api_key', options.apiKey)
+      this.initialized = true
     } else if (options.token) {
-      this.httpClient.setAuth('token', options.token);
-      this.initialized = true;
+      this.httpClient.setAuth('token', options.token)
+      this.initialized = true
     }
 
     // Initialize API classes
-    this.agents = new AgentsAPI(this.httpClient);
-    this.usage = new UsageAPI(this.httpClient);
-    this.auth = new AuthAPI(this.httpClient);
+    this.agents = new AgentsAPI(this.httpClient)
+    this.usage = new UsageAPI(this.httpClient)
+    this.auth = new AuthAPI(this.httpClient)
   }
 
   /**
@@ -73,28 +73,28 @@ export class CastariClient {
    * This is called automatically before the first API request
    */
   private async initialize(): Promise<void> {
-    if (this.initialized) return;
+    if (this.initialized) return
 
     // If already initializing, wait for it
     if (this.initPromise) {
-      await this.initPromise;
-      return;
+      await this.initPromise
+      return
     }
 
-    this.initPromise = this.doInitialize();
-    await this.initPromise;
+    this.initPromise = this.doInitialize()
+    await this.initPromise
   }
 
   private async doInitialize(): Promise<void> {
     // Load auth from config if not provided
     if (!this.options.apiKey && !this.options.token) {
-      const auth = await getAuth();
+      const auth = await getAuth()
       if (auth) {
-        this.httpClient.setAuth(auth.type, auth.value);
+        this.httpClient.setAuth(auth.type, auth.value)
       }
     }
 
-    this.initialized = true;
+    this.initialized = true
   }
 
   /**
@@ -102,11 +102,11 @@ export class CastariClient {
    * @throws AuthenticationError if no credentials are available
    */
   async ensureAuthenticated(): Promise<void> {
-    await this.initialize();
+    await this.initialize()
 
-    const auth = await getAuth();
+    const auth = await getAuth()
     if (!auth && !this.options.apiKey && !this.options.token) {
-      throw new AuthenticationError();
+      throw new AuthenticationError()
     }
   }
 }

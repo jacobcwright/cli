@@ -82,7 +82,7 @@ export class AgentsAPI {
   /**
    * Invoke an agent with a prompt
    * @param slug - The agent's unique slug
-   * @param options - Invocation options including prompt
+   * @param options - Invocation options including prompt and optional session ID
    * @returns The invocation response with result and usage stats
    * @throws NotFoundError if agent doesn't exist
    * @throws BadRequestError if agent is not deployed
@@ -92,7 +92,10 @@ export class AgentsAPI {
       'POST',
       `/agents/${encodeURIComponent(slug)}/invoke`,
       {
-        body: { prompt: options.prompt },
+        body: {
+          prompt: options.prompt,
+          ...(options.sessionId && { session_id: options.sessionId }),
+        },
         timeout: 180000, // 3 minutes for invocation
       }
     );

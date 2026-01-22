@@ -62,6 +62,8 @@ export interface CreateAgentOptions {
  */
 export interface InvocationResponse {
   invocation_id: string;
+  session_id: string;
+  sandbox_id?: string | null;
   response_content: string;
   input_tokens: number;
   output_tokens: number;
@@ -75,6 +77,8 @@ export interface InvocationResponse {
  */
 export interface InvokeOptions {
   prompt: string;
+  /** Optional session ID for per-session sandbox scaling. Auto-generated if not provided. */
+  sessionId?: string;
 }
 
 /**

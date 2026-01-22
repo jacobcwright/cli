@@ -11,7 +11,8 @@ export const invokeCommand = new Command('invoke')
   .argument('<slug>', 'Agent slug')
   .argument('[prompt]', 'Prompt to send to the agent')
   .option('-i, --input <file>', 'Read prompt from file')
-  .action(async (slug: string, promptArg?: string, options?: { input?: string }) => {
+  .option('-s, --session <id>', 'Session ID for conversation continuity (reuses sandbox)')
+  .action(async (slug: string, promptArg?: string, options?: { input?: string; session?: string }) => {
     try {
       // Get prompt from argument or file
       let prompt: string;
@@ -31,7 +32,10 @@ export const invokeCommand = new Command('invoke')
       await client.ensureAuthenticated();
 
       spinner.text = `Invoking ${slug}... (this may take a while)`;
-      const result = await client.agents.invoke(slug, { prompt });
+      const result = await client.agents.invoke(slug, {
+        prompt,
+        sessionId: options?.session,
+      });
 
       spinner.stop();
       blank();
@@ -42,6 +46,7 @@ export const invokeCommand = new Command('invoke')
       // Print usage stats
       blank();
       console.log(chalk.gray('─'.repeat(50)));
+      console.log(chalk.gray(`Session: ${result.session_id}`));
       console.log(
         chalk.gray(
           `Tokens: ${formatNumber(result.input_tokens)} in / ${formatNumber(result.output_tokens)} out`

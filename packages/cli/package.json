@@ -1,6 +1,6 @@
 {
   "name": "@castari/cli",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Castari CLI - Deploy AI agents with one command",
   "author": "Castari <hello@castari.dev>",
   "license": "MIT",

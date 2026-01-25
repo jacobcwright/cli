@@ -82,6 +82,12 @@ function downloadTarball(url: string, destPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const file = fsExtra.createWriteStream(destPath);
 
+    file.on('error', (err) => {
+      file.close();
+      fsExtra.unlink(destPath).catch(() => {});
+      reject(err);
+    });
+
     const request = (reqUrl: string) => {
       https.get(reqUrl, (response) => {
         // Handle redirects

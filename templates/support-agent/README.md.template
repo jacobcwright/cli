@@ -1,0 +1,141 @@
+# {{name}}
+
+A customer support agent powered by Claude and Castari. This agent can look up user and order information, handle common inquiries, and escalate complex issues to human support.
+
+## Quick Start
+
+```bash
+# Deploy to Castari
+cast deploy
+
+# Invoke the agent
+cast invoke {{name}} "I need help with my order"
+```
+
+## Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run locally (reads prompt from stdin)
+echo "I need help with order ORD-001" | npm run dev
+
+# Build for production
+npm run build
+```
+
+## Example Support Interactions
+
+```bash
+# Order inquiry
+echo "What's the status of order ORD-001?" | npm run dev
+
+# User lookup
+echo "Can you look up the account for alice@example.com?" | npm run dev
+
+# Password reset (will escalate)
+echo "I forgot my password and need help resetting it" | npm run dev
+
+# Refund request (will escalate for high amounts)
+echo "I want a refund for my $150 order" | npm run dev
+
+# General help
+echo "How do I upgrade my plan?" | npm run dev
+```
+
+## Integrating Real Data
+
+The template includes mock data. To use real customer data:
+
+### Database Integration
+```typescript
+// Replace MOCK_USERS lookup with database query
+async function lookupUser(identifier: string) {
+  const user = await db.users.findOne({
+    $or: [{ email: identifier }, { id: identifier }]
+  });
+  return user ? JSON.stringify(user) : "User not found";
+}
+```
+
+### CRM Integration (e.g., Salesforce, HubSpot)
+```typescript
+async function lookupUser(identifier: string) {
+  const response = await fetch(
+    `https://api.hubspot.com/contacts/v1/contact/email/${identifier}/profile`,
+    { headers: { Authorization: `Bearer ${process.env.HUBSPOT_TOKEN}` } }
+  );
+  return JSON.stringify(await response.json());
+}
+```
+
+## Customization
+
+### Support Behavior
+Edit `CLAUDE.md` to customize:
+- Escalation rules and thresholds
+- Response tone and style
+- Company-specific policies
+- Available actions
+
+### Adding Tools
+Edit `src/index.ts` to add tools like:
+- `issue_refund` - Process refunds directly
+- `update_subscription` - Modify user plans
+- `send_email` - Send follow-up emails
+- `check_inventory` - Check product availability
+
+## Environment Variables
+
+- `ANTHROPIC_API_KEY` - Required. Your Anthropic API key.
+
+Set secrets for deployed agents:
+```bash
+cast secrets set {{name}} ANTHROPIC_API_KEY sk-ant-...
+```
+
+## Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `lookup_user` | Find user by email or ID |
+| `lookup_order` | Get order details by order ID |
+| `create_ticket` | Escalate to human support |
+| `send_response` | Send message to customer |
+
+## Mock Data
+
+The template includes sample data for testing:
+
+**Users:**
+- alice@example.com (Pro plan)
+- bob@example.com (Free plan)
+- carol@example.com (Enterprise plan)
+
+**Orders:**
+- ORD-001 (delivered, $99.99)
+- ORD-002 (processing, $49.99)
+- ORD-003 (shipped, $299.99)
+
+## Output Files
+
+- `tickets.json` - Created tickets are saved here
+- `responses.log` - Sent responses are logged here
+
+## Project Structure
+
+```
+{{name}}/
+├── src/
+│   └── index.ts      # Agent entry point
+├── CLAUDE.md         # Support guidelines
+├── castari.json      # Castari config
+├── package.json
+└── tsconfig.json
+```
+
+## Learn More
+
+- [Castari Documentation](https://docs.castari.dev)
+- [Anthropic API Docs](https://docs.anthropic.com)

@@ -1,6 +1,6 @@
 {
   "name": "@castari/sdk",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Official Castari SDK for TypeScript and Node.js",
   "author": "Castari <hello@castari.dev>",
   "license": "MIT",

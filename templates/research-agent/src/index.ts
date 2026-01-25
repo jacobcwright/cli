@@ -116,16 +116,23 @@ function fetchUrl(url: string): Promise<string> {
       res.on("data", (chunk) => (data += chunk));
       res.on("end", () => {
         // Basic HTML to text conversion
-        // Remove script and style tags (handle variations like </script > and nested cases)
+        // Note: For production use, consider using a proper HTML parser library
         let text = data;
-        // Loop to handle nested/malformed script/style tags
-        let prevLen;
-        do {
-          prevLen = text.length;
-          text = text.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, "");
-          text = text.replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, "");
-        } while (text.length < prevLen);
-        // Remove any remaining tags and normalize whitespace
+
+        // Remove script and style blocks with their content
+        // Use [^]* to match any character including newlines
+        text = text.replace(/<script\b[^]*?<\/script[^>]*>/gi, "");
+        text = text.replace(/<style\b[^]*?<\/style[^>]*>/gi, "");
+
+        // Defense-in-depth: remove any orphaned script/style tags
+        text = text.replace(/<\/?script[^>]*>/gi, "");
+        text = text.replace(/<\/?style[^>]*>/gi, "");
+
+        // Final safety: ensure no script/style opening sequences remain
+        text = text.replace(/<script/gi, "&lt;script");
+        text = text.replace(/<style/gi, "&lt;style");
+
+        // Remove all remaining HTML tags and normalize whitespace
         text = text
           .replace(/<[^>]+>/g, " ")
           .replace(/\s+/g, " ")

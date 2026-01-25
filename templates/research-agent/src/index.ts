@@ -116,9 +116,17 @@ function fetchUrl(url: string): Promise<string> {
       res.on("data", (chunk) => (data += chunk));
       res.on("end", () => {
         // Basic HTML to text conversion
-        const text = data
-          .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
-          .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+        // Remove script and style tags (handle variations like </script > and nested cases)
+        let text = data;
+        // Loop to handle nested/malformed script/style tags
+        let prevLen;
+        do {
+          prevLen = text.length;
+          text = text.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, "");
+          text = text.replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, "");
+        } while (text.length < prevLen);
+        // Remove any remaining tags and normalize whitespace
+        text = text
           .replace(/<[^>]+>/g, " ")
           .replace(/\s+/g, " ")
           .trim()
@@ -213,7 +221,8 @@ async function runAgent(prompt: string): Promise<string> {
       messages,
     });
 
-    if (response.stop_reason === "end_turn") {
+    // Handle completion (including max_tokens to avoid infinite loop)
+    if (response.stop_reason === "end_turn" || response.stop_reason === "max_tokens") {
       const textBlock = response.content.find((b) => b.type === "text");
       return textBlock ? textBlock.text : "";
     }

@@ -124,15 +124,15 @@ function safeEval(expression: string): number | string {
       return Math.sqrt(parseFloat(sqrtMatch[1]));
     }
 
-    // Handle power: "2^3" or "2**3"
-    const powerMatch = expression.match(/(\d+(?:\.\d+)?)\s*[\^*]{1,2}\s*(\d+(?:\.\d+)?)/);
+    // Handle power: "2^3" or "2**3" (must match ^ or ** specifically, not single *)
+    const powerMatch = expression.match(/(\d+(?:\.\d+)?)\s*(?:\^|\*\*)\s*(\d+(?:\.\d+)?)/);
     if (powerMatch) {
       return Math.pow(parseFloat(powerMatch[1]), parseFloat(powerMatch[2]));
     }
 
     // Basic arithmetic - only allow safe characters
     const sanitized = expression.replace(/[^0-9+\-*/().%\s]/g, "");
-    if (sanitized !== expression.replace(/\s/g, "")) {
+    if (sanitized.replace(/\s/g, "") !== expression.replace(/\s/g, "")) {
       return "Invalid characters in expression. Use numbers and operators: + - * / ( ) %";
     }
 
@@ -248,7 +248,8 @@ async function runAgent(prompt: string): Promise<string> {
       messages,
     });
 
-    if (response.stop_reason === "end_turn") {
+    // Handle completion (including max_tokens to avoid infinite loop)
+    if (response.stop_reason === "end_turn" || response.stop_reason === "max_tokens") {
       const textBlock = response.content.find((b) => b.type === "text");
       return textBlock ? textBlock.text : "";
     }

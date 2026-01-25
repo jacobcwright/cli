@@ -94,6 +94,7 @@ function downloadTarball(url: string, destPath: string): Promise<void> {
         }
 
         if (response.statusCode !== 200) {
+          file.close();
           reject(new Error(`Failed to download: HTTP ${response.statusCode}`));
           return;
         }

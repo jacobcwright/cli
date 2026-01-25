@@ -195,7 +195,8 @@ async function runAgent(prompt: string): Promise<string> {
       messages,
     });
 
-    if (response.stop_reason === "end_turn") {
+    // Handle completion (including max_tokens to avoid infinite loop)
+    if (response.stop_reason === "end_turn" || response.stop_reason === "max_tokens") {
       const textBlock = response.content.find((b) => b.type === "text");
       return textBlock ? textBlock.text : "";
     }

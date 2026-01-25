@@ -1,0 +1,166 @@
+# {{name}}
+
+An agent demonstrating custom tool integrations, powered by Claude and Castari. This template shows how to build and integrate your own tools using the MCP (Model Context Protocol) pattern.
+
+## Quick Start
+
+```bash
+# Deploy to Castari
+cast deploy
+
+# Invoke the agent
+cast invoke {{name}} "What's 15% of 250?"
+```
+
+## Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run locally
+echo "What's the weather in San Francisco?" | npm run dev
+
+# Build for production
+npm run build
+```
+
+## Example Tool Usage
+
+```bash
+# Calculator
+echo "Calculate 2^10 and sqrt(144)" | npm run dev
+
+# Weather lookup
+echo "What's the weather like in Tokyo and London?" | npm run dev
+
+# Database queries
+echo "Show me all products under $30" | npm run dev
+echo "Find users with admin role" | npm run dev
+
+# Notifications
+echo "Send a Slack message to #general saying 'Hello team!'" | npm run dev
+```
+
+## Adding Custom Tools
+
+### Step 1: Define the Tool Schema
+
+Add to the `tools` array in `src/index.ts`:
+
+```typescript
+{
+  name: "my_custom_tool",
+  description: "Description of what the tool does",
+  input_schema: {
+    type: "object" as const,
+    properties: {
+      param1: {
+        type: "string",
+        description: "First parameter",
+      },
+      param2: {
+        type: "number",
+        description: "Second parameter (optional)",
+      },
+    },
+    required: ["param1"],
+  },
+}
+```
+
+### Step 2: Implement the Handler
+
+Add a case to the `executeTool` switch statement:
+
+```typescript
+case "my_custom_tool": {
+  const param1 = input.param1 as string;
+  const param2 = (input.param2 as number) || 0;
+
+  // Your implementation here
+  return `Result: ${param1}, ${param2}`;
+}
+```
+
+### Step 3: Update CLAUDE.md
+
+Document the new tool so the agent knows how to use it.
+
+## Integration Patterns
+
+### External API Integration
+
+```typescript
+case "fetch_stock_price": {
+  const symbol = input.symbol as string;
+  const response = await fetch(
+    `https://api.example.com/stocks/${symbol}`,
+    { headers: { Authorization: `Bearer ${process.env.API_KEY}` } }
+  );
+  return JSON.stringify(await response.json());
+}
+```
+
+### Database Integration
+
+```typescript
+case "query_postgres": {
+  const query = input.query as string;
+  const result = await pool.query(query);
+  return JSON.stringify(result.rows);
+}
+```
+
+### External Service Integration
+
+```typescript
+case "send_email": {
+  await sendgrid.send({
+    to: input.recipient as string,
+    subject: input.subject as string,
+    text: input.body as string,
+  });
+  return "Email sent successfully";
+}
+```
+
+## Environment Variables
+
+- `ANTHROPIC_API_KEY` - Required. Your Anthropic API key.
+
+Set secrets for deployed agents:
+```bash
+cast secrets set {{name}} ANTHROPIC_API_KEY sk-ant-...
+```
+
+## Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `calculate` | Math expressions (arithmetic, percentages, sqrt) |
+| `get_weather` | Weather lookup (mock data for 6 cities) |
+| `query_database` | Query mock DB (users, orders, products) |
+| `send_notification` | Send via email/slack/sms (logged to file) |
+
+## Output Files
+
+- `notifications.log` - Sent notifications are logged here
+
+## Project Structure
+
+```
+{{name}}/
+├── src/
+│   └── index.ts      # Agent with custom tools
+├── CLAUDE.md         # Tool documentation
+├── castari.json      # Castari config
+├── package.json
+└── tsconfig.json
+```
+
+## Learn More
+
+- [Castari Documentation](https://docs.castari.dev)
+- [Anthropic API Docs](https://docs.anthropic.com)
+- [MCP Specification](https://modelcontextprotocol.io)

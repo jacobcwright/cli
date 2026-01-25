@@ -127,6 +127,92 @@ export class HttpClient {
   }
 
   /**
+   * Make a multipart form-data request for file uploads
+   */
+  async requestMultipart<T>(
+    method: HttpMethod,
+    path: string,
+    formData: FormData,
+    options?: {
+      query?: Record<string, string | number | boolean | undefined>;
+      timeout?: number;
+    }
+  ): Promise<T> {
+    const url = new URL(`/api/v1${path}`, this.baseUrl);
+
+    // Add query parameters
+    if (options?.query) {
+      for (const [key, value] of Object.entries(options.query)) {
+        if (value !== undefined) {
+          url.searchParams.set(key, String(value));
+        }
+      }
+    }
+
+    // Build headers - don't set Content-Type, let fetch handle it for FormData
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+    };
+
+    // Add auth header
+    if (this.authValue) {
+      headers['Authorization'] = `Bearer ${this.authValue}`;
+    }
+
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeout = options?.timeout ?? 300000; // Default 5 minutes for uploads
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url.toString(), {
+        method,
+        headers,
+        body: formData,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      // Handle no-content responses
+      if (response.status === 204) {
+        return undefined as T;
+      }
+
+      // Parse response body
+      const contentType = response.headers.get('content-type');
+      let data: unknown;
+      if (contentType?.includes('application/json')) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+      }
+
+      // Handle errors
+      if (!response.ok) {
+        this.handleError(response.status, data, response.headers);
+      }
+
+      return data as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof CastariError) {
+        throw error;
+      }
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new CastariError('Upload timed out');
+        }
+        throw new CastariError(`Upload failed: ${error.message}`);
+      }
+
+      throw new CastariError('An unexpected error occurred');
+    }
+  }
+
+  /**
    * Handle HTTP error responses
    */
   private handleError(status: number, data: unknown, headers: Headers): never {

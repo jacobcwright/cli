@@ -10,6 +10,7 @@ import { stopCommand } from './commands/stop.js';
 import { invokeCommand } from './commands/invoke.js';
 import { secretsCommand } from './commands/secrets.js';
 import { usageCommand } from './commands/usage.js';
+import { initCommand } from './commands/init.js';
 
 const program = new Command();
 
@@ -39,6 +40,9 @@ program.addCommand(secretsCommand);
 
 // Usage
 program.addCommand(usageCommand);
+
+// Project initialization
+program.addCommand(initCommand);
 
 // Parse arguments
 program.parse();

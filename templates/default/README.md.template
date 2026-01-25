@@ -1,0 +1,34 @@
+# {{name}}
+
+An AI agent powered by Claude and Castari.
+
+## Quick Start
+
+```bash
+# Deploy to Castari
+cast deploy
+
+# Invoke the agent
+cast invoke {{name}} "Hello!"
+```
+
+## Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run locally (test with stdin)
+echo "Hello!" | npm run dev
+```
+
+## Customization
+
+- Edit `src/index.ts` to customize agent behavior
+- Edit `CLAUDE.md` to change agent instructions
+- Add secrets with `cast secrets set {{name}} KEY value`
+
+## Learn More
+
+- [Castari Documentation](https://docs.castari.dev)
+- [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk)

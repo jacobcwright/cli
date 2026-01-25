@@ -1,0 +1,123 @@
+# {{name}}
+
+A research agent powered by Claude and Castari. This agent can search the web, read web pages, and synthesize findings into comprehensive reports.
+
+## Quick Start
+
+```bash
+# Deploy to Castari
+cast deploy
+
+# Invoke the agent
+cast invoke {{name}} "Research the current state of AI agents in 2026"
+```
+
+## Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run locally (reads prompt from stdin)
+echo "Research the benefits of TypeScript" | npm run dev
+
+# Build for production
+npm run build
+```
+
+## Example Research Prompts
+
+```bash
+# Technology research
+echo "Compare the top 3 cloud providers for serverless computing" | npm run dev
+
+# Market research
+echo "What are the latest trends in AI development?" | npm run dev
+
+# Technical comparison
+echo "Compare React vs Vue vs Svelte for building web apps" | npm run dev
+
+# Save a report
+echo "Research quantum computing and save the report to quantum.md" | npm run dev
+```
+
+## Integrating Real Search
+
+The template includes a mock web search. To use real search results:
+
+### Option 1: SerpAPI
+```typescript
+// In src/index.ts, replace mockWebSearch with:
+async function realWebSearch(query: string): Promise<string> {
+  const response = await fetch(
+    `https://serpapi.com/search?q=${encodeURIComponent(query)}&api_key=${process.env.SERPAPI_KEY}`
+  );
+  return JSON.stringify(await response.json());
+}
+```
+
+### Option 2: Brave Search API
+```typescript
+async function realWebSearch(query: string): Promise<string> {
+  const response = await fetch(
+    `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}`,
+    { headers: { 'X-Subscription-Token': process.env.BRAVE_API_KEY! } }
+  );
+  return JSON.stringify(await response.json());
+}
+```
+
+## Customization
+
+### Research Behavior
+Edit `CLAUDE.md` to customize:
+- Research methodology and depth
+- Output format and structure
+- Citation style preferences
+- Domain-specific guidelines
+
+### Adding Tools
+Edit `src/index.ts` to add tools like:
+- PDF parsing
+- Database queries
+- API integrations
+- Image analysis
+
+## Environment Variables
+
+- `ANTHROPIC_API_KEY` - Required. Your Anthropic API key.
+- `SEARCH_API_KEY` - Optional. API key for real web search.
+
+Set secrets for deployed agents:
+```bash
+cast secrets set {{name}} ANTHROPIC_API_KEY sk-ant-...
+cast secrets set {{name}} SEARCH_API_KEY your-search-key
+```
+
+## Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `web_search` | Search the web (mock data, see integration guide) |
+| `read_url` | Fetch and read web page content |
+| `save_report` | Save research to a markdown file |
+| `read_file` | Read local files for context |
+
+## Project Structure
+
+```
+{{name}}/
+├── src/
+│   └── index.ts      # Agent entry point
+├── CLAUDE.md         # Research guidelines
+├── castari.json      # Castari config
+├── package.json
+└── tsconfig.json
+```
+
+## Learn More
+
+- [Castari Documentation](https://docs.castari.dev)
+- [Anthropic API Docs](https://docs.anthropic.com)
+- [SerpAPI](https://serpapi.com) - Search API integration
+- [Brave Search API](https://brave.com/search/api/) - Alternative search API

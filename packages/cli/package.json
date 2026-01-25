@@ -2,7 +2,7 @@
   "name": "@castari/cli",
   "version": "0.3.0",
   "description": "Castari CLI - Deploy AI agents with one command",
-  "author": "Castari <hello@castari.dev>",
+  "author": "Castari <founders@castari.com>",
   "license": "MIT",
   "repository": {
     "type": "git",

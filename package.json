@@ -2,13 +2,13 @@
   "name": "castari-cli",
   "private": true,
   "description": "Castari CLI monorepo - Deploy AI agents with one command",
-  "author": "Castari <hello@castari.dev>",
+  "author": "Castari <founders@castari.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/castari/cli.git"
   },
-  "homepage": "https://castari.dev",
+  "homepage": "https://castari.com",
   "bugs": {
     "url": "https://github.com/castari/cli/issues"
   },

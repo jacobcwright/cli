@@ -1,6 +1,6 @@
 # {{name}}
 
-An AI agent powered by Claude and Castari.
+A coding agent powered by Claude and Castari. This agent can read/write files, execute bash commands, and help with programming tasks.
 
 ## Quick Start
 
@@ -9,7 +9,7 @@ An AI agent powered by Claude and Castari.
 cast deploy
 
 # Invoke the agent
-cast invoke {{name}} "Hello!"
+cast invoke {{name}} "What files are in this directory?"
 ```
 
 ## Local Development
@@ -18,17 +18,75 @@ cast invoke {{name}} "Hello!"
 # Install dependencies
 npm install
 
-# Run locally (test with stdin)
-echo "Hello!" | npm run dev
+# Run locally (reads prompt from stdin)
+echo "List all files here" | npm run dev
+
+# Build for production
+npm run build
+```
+
+## Example Invocations
+
+```bash
+# Read a file
+echo "Read package.json and explain what it does" | npm run dev
+
+# Write a file
+echo "Create a file called hello.txt with the text 'Hello World'" | npm run dev
+
+# Run a command
+echo "Run ls -la and explain the output" | npm run dev
+
+# Multi-step task
+echo "Create a src/utils.ts file with a function that formats dates" | npm run dev
 ```
 
 ## Customization
 
-- Edit `src/index.ts` to customize agent behavior
-- Edit `CLAUDE.md` to change agent instructions
-- Add secrets with `cast secrets set {{name}} KEY value`
+### Agent Behavior
+Edit `CLAUDE.md` to customize how the agent behaves:
+- Add domain-specific instructions
+- Define coding style preferences
+- Set boundaries for what the agent should/shouldn't do
+
+### Adding Tools
+Edit `src/index.ts` to add new tools:
+
+1. Add to the `tools` array with name, description, and input schema
+2. Add a case to the `executeTool` switch statement
+3. Rebuild with `npm run build`
+
+### Environment Variables
+
+- `ANTHROPIC_API_KEY` - Required. Your Anthropic API key.
+
+Set secrets for deployed agents:
+```bash
+cast secrets set {{name}} ANTHROPIC_API_KEY sk-ant-...
+```
+
+## Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `read_file` | Read contents of a file |
+| `write_file` | Write content to a file (creates directories) |
+| `bash` | Execute bash commands (30s timeout) |
+| `list_files` | List directory contents |
+
+## Project Structure
+
+```
+{{name}}/
+├── src/
+│   └── index.ts      # Agent entry point
+├── CLAUDE.md         # Agent instructions
+├── castari.json      # Castari config
+├── package.json
+└── tsconfig.json
+```
 
 ## Learn More
 
 - [Castari Documentation](https://docs.castari.dev)
-- [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk)
+- [Anthropic API Docs](https://docs.anthropic.com)

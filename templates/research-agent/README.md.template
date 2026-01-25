@@ -117,7 +117,7 @@ cast secrets set {{name}} SEARCH_API_KEY your-search-key
 
 ## Learn More
 
-- [Castari Documentation](https://docs.castari.dev)
+- [Castari Documentation](https://docs.castari.com)
 - [Anthropic API Docs](https://docs.anthropic.com)
 - [SerpAPI](https://serpapi.com) - Search API integration
 - [Brave Search API](https://brave.com/search/api/) - Alternative search API

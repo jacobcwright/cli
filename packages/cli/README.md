@@ -133,7 +133,7 @@ Credentials are stored in `~/.castari/credentials.yaml` (mode 0600).
 
 Environment variables:
 - `CASTARI_API_KEY` - API key for authentication
-- `CASTARI_API_URL` - Override API base URL (default: https://api.castari.dev)
+- `CASTARI_API_URL` - Override API base URL (default: https://api.castari.com)
 
 ## License
 

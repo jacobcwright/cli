@@ -2,7 +2,7 @@
   "name": "@castari/sdk",
   "version": "0.3.0",
   "description": "Official Castari SDK for TypeScript and Node.js",
-  "author": "Castari <hello@castari.dev>",
+  "author": "Castari <founders@castari.com>",
   "license": "MIT",
   "repository": {
     "type": "git",

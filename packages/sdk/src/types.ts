@@ -184,7 +184,7 @@ export interface CastariClientOptions {
   apiKey?: string;
   /** OAuth token */
   token?: string;
-  /** Base API URL (default: https://api.castari.dev) */
+  /** Base API URL (default: https://api.castari.com) */
   baseUrl?: string;
 }
 

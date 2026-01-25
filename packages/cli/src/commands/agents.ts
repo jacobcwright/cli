@@ -99,7 +99,7 @@ const createCommand = new Command('create')
       spinner.succeed(`Agent '${agent.name}' created!`);
       blank();
       keyValue('Slug', agent.slug);
-      keyValue('Git URL', agent.git_repo_url);
+      keyValue('Git URL', agent.git_repo_url ?? undefined);
       keyValue('Status', agent.status);
       blank();
       hint(`Deploy with: cast deploy ${agent.slug}`);
@@ -127,7 +127,7 @@ const getCommand = new Command('get')
       blank();
       keyValue('Name', agent.name);
       keyValue('Slug', agent.slug);
-      keyValue('Git URL', agent.git_repo_url);
+      keyValue('Git URL', agent.git_repo_url ?? undefined);
       keyValue('Status', formatStatus(agent.status));
       keyValue('Sandbox ID', agent.sandbox_id ?? undefined);
       keyValue('Created', formatDate(agent.created_at));

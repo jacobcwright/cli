@@ -4,6 +4,11 @@
 export type AgentStatus = 'draft' | 'pending' | 'deploying' | 'active' | 'stopped' | 'failed';
 
 /**
+ * Agent source type
+ */
+export type AgentSourceType = 'git' | 'local';
+
+/**
  * Agent configuration
  */
 export interface AgentConfig {
@@ -21,8 +26,10 @@ export interface Agent {
   name: string;
   slug: string;
   description?: string | null;
-  git_repo_url: string;
+  source_type: AgentSourceType;
+  git_repo_url?: string | null;
   git_branch: string;
+  source_hash?: string | null;
   agent_config?: AgentConfig;
   default_model: string;
   max_turns: number;
@@ -52,9 +59,23 @@ export interface AgentsListResponse {
  */
 export interface CreateAgentOptions {
   name: string;
-  gitRepoUrl: string;
   slug?: string;
   description?: string;
+  /** Source type: 'git' (default) or 'local' for direct code upload */
+  sourceType?: AgentSourceType;
+  /** Git repository URL (required when sourceType is 'git') */
+  gitRepoUrl?: string;
+}
+
+/**
+ * Response from uploading code
+ */
+export interface UploadResponse {
+  agent_id: string;
+  source_hash: string;
+  status: AgentStatus;
+  sandbox_id?: string | null;
+  message: string;
 }
 
 /**

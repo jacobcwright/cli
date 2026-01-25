@@ -6,6 +6,7 @@ import type {
   InvocationResponse,
   InvokeOptions,
   Secret,
+  UploadResponse,
 } from './types.js';
 
 /**
@@ -29,13 +30,22 @@ export class AgentsAPI {
    * @returns The created agent
    */
   async create(options: CreateAgentOptions): Promise<Agent> {
-    return this.client.request<Agent>('POST', '/agents', {
-      body: {
-        name: options.name,
-        git_repo_url: options.gitRepoUrl,
-        slug: options.slug,
-      },
-    });
+    const body: Record<string, unknown> = {
+      name: options.name,
+      source_type: options.sourceType ?? 'git',
+    };
+
+    if (options.slug) {
+      body.slug = options.slug;
+    }
+    if (options.description) {
+      body.description = options.description;
+    }
+    if (options.gitRepoUrl) {
+      body.git_repo_url = options.gitRepoUrl;
+    }
+
+    return this.client.request<Agent>('POST', '/agents', { body });
   }
 
   /**
@@ -67,6 +77,35 @@ export class AgentsAPI {
     return this.client.request<Agent>('POST', `/agents/${encodeURIComponent(slug)}/deploy`, {
       timeout: 120000, // 2 minutes for deployment
     });
+  }
+
+  /**
+   * Upload code directly to an agent and deploy
+   * @param slug - The agent's unique slug
+   * @param file - The code archive file (Blob or File)
+   * @param filename - The filename (e.g., 'code.tar.gz')
+   * @param options - Upload options
+   * @returns The upload response with deployment status
+   * @throws NotFoundError if agent doesn't exist
+   */
+  async uploadCode(
+    slug: string,
+    file: Blob,
+    filename: string,
+    options?: { autoDeploy?: boolean }
+  ): Promise<UploadResponse> {
+    const formData = new FormData();
+    formData.append('file', file, filename);
+
+    return this.client.requestMultipart<UploadResponse>(
+      'POST',
+      `/agents/${encodeURIComponent(slug)}/upload-code`,
+      formData,
+      {
+        query: { auto_deploy: options?.autoDeploy ?? true },
+        timeout: 300000, // 5 minutes for upload + deploy
+      }
+    );
   }
 
   /**

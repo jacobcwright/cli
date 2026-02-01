@@ -5,6 +5,8 @@ export { CastariClient } from './client.js';
 export { AgentsAPI } from './agents.js';
 export { UsageAPI } from './usage.js';
 export { AuthAPI } from './auth.js';
+export { StorageAPI } from './storage.js';
+export { MountsAPI } from './mounts.js';
 
 // Errors
 export {
@@ -50,4 +52,23 @@ export type {
   DailyUsageResponse,
   CastariClientOptions,
   ApiErrorResponse,
+  // Storage types
+  StorageProvider,
+  Bucket,
+  BucketListResponse,
+  CreateBucketOptions,
+  UpdateBucketOptions,
+  BucketCredentials,
+  TestConnectionResult,
+  PresignedUrlOptions,
+  PresignedUrl,
+  FileInfo,
+  FileListResponse,
+  // Mount types
+  PermissionMode,
+  PermissionRule,
+  Mount,
+  MountListResponse,
+  AddMountOptions,
+  UpdateMountOptions,
 } from './types.js';

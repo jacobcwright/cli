@@ -7,6 +7,7 @@ export { UsageAPI } from './usage.js';
 export { AuthAPI } from './auth.js';
 export { StorageAPI } from './storage.js';
 export { MountsAPI } from './mounts.js';
+export { FilesAPI } from './files.js';
 
 // Errors
 export {
@@ -71,4 +72,19 @@ export type {
   MountListResponse,
   AddMountOptions,
   UpdateMountOptions,
+  // Managed Files types (Storage v2)
+  FileScope,
+  FileUploadStatus,
+  ManagedFile,
+  FileUploadResponse,
+  ManagedFileList,
+  StorageUsage,
+  PresignedUpload,
+  AgentFile,
+  AgentFileList,
+  AttachFileOptions,
+  ListFilesOptions,
+  UploadFileOptions,
+  UpdateFileOptions,
+  GetUploadUrlOptions,
 } from './types.js';

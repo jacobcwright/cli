@@ -379,3 +379,149 @@ export interface UpdateMountOptions {
   cacheTtlSeconds?: number;
   enabled?: boolean;
 }
+
+// ============================================================================
+// Managed Files Types (Storage v2)
+// ============================================================================
+
+/**
+ * File scope for managed storage
+ */
+export type FileScope = 'user' | 'agent' | 'session';
+
+/**
+ * File upload status
+ */
+export type FileUploadStatus = 'pending' | 'confirmed';
+
+/**
+ * A managed file in Castari storage
+ */
+export interface ManagedFile {
+  id: string;
+  file_id: string;
+  filename: string;
+  content_type: string | null;
+  size_bytes: number;
+  sha256_hash: string;
+  scope: FileScope;
+  scope_id: string | null;
+  description: string | null;
+  tags: string[];
+  upload_status: FileUploadStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Response from uploading a file
+ */
+export interface FileUploadResponse {
+  file_id: string;
+  filename: string;
+  content_type: string | null;
+  size_bytes: number;
+  sha256_hash: string;
+  created_at: string;
+}
+
+/**
+ * Response from listing managed files
+ */
+export interface ManagedFileList {
+  files: ManagedFile[];
+  meta: {
+    total: number;
+    limit: number;
+    offset: number;
+    has_more: boolean;
+  };
+}
+
+/**
+ * Storage usage statistics
+ */
+export interface StorageUsage {
+  total_files: number;
+  total_bytes: number;
+  total_mb: number;
+  limit_mb: number;
+  usage_percent: number;
+}
+
+/**
+ * Presigned upload URL response
+ */
+export interface PresignedUpload {
+  file_id: string;
+  upload_url: string;
+  upload_method: 'PUT';
+  upload_headers: Record<string, string>;
+  expires_at: string;
+}
+
+/**
+ * A file attached to an agent
+ */
+export interface AgentFile {
+  id: string;
+  file_id: string;
+  filename: string;
+  mount_path: string;
+  read_only: boolean;
+  size_bytes: number;
+  created_at: string;
+}
+
+/**
+ * Response from listing agent files
+ */
+export interface AgentFileList {
+  files: AgentFile[];
+  total_size_bytes: number;
+}
+
+/**
+ * Options for attaching a file to an agent
+ */
+export interface AttachFileOptions {
+  fileId: string;
+  mountPath?: string;
+  readOnly?: boolean;
+}
+
+/**
+ * Options for listing managed files
+ */
+export interface ListFilesOptions {
+  limit?: number;
+  offset?: number;
+  scope?: FileScope;
+  tags?: string;
+  search?: string;
+}
+
+/**
+ * Options for uploading a file
+ */
+export interface UploadFileOptions {
+  description?: string;
+  tags?: string[];
+}
+
+/**
+ * Options for updating a file
+ */
+export interface UpdateFileOptions {
+  description?: string;
+  tags?: string[];
+}
+
+/**
+ * Options for getting a presigned upload URL
+ */
+export interface GetUploadUrlOptions {
+  contentType?: string;
+  description?: string;
+  tags?: string[];
+}

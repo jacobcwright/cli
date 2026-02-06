@@ -130,15 +130,24 @@ export class FilesAPI {
   }
 
   /**
+   * Download a file's content
+   * @param fileId - The file's unique ID
+   * @returns The raw Response with file content
+   */
+  async download(fileId: string): Promise<Response> {
+    return this.client.rawRequest(
+      'GET',
+      `/files/${encodeURIComponent(fileId)}/content`
+    );
+  }
+
+  /**
    * Get download URL for a file
    * @param fileId - The file's unique ID
-   * @returns The download URL (redirect URL)
+   * @returns The full download URL
    */
   async getDownloadUrl(fileId: string): Promise<string> {
-    // The API returns a redirect, so we get the content endpoint URL
-    const baseUrl = '/files/' + encodeURIComponent(fileId) + '/content';
-    // Return the full URL - caller can use this directly or fetch it
-    return baseUrl;
+    return `${this.client.getBaseUrl()}/api/v1/files/${encodeURIComponent(fileId)}/content`;
   }
 
   /**

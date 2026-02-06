@@ -370,25 +370,8 @@ const downloadCommand = new Command('download')
       const outputPath = options.output || file.filename;
       spinner.text = `Downloading ${file.filename}...`;
 
-      // Get download URL and fetch
-      const downloadPath = await client.files.getDownloadUrl(fileId);
-
-      // We need to construct the full URL and make the request
-      // The SDK returns a relative path, so we need to use the http client's base URL
-      // For now, we'll use a workaround - make a direct request through the client
-      // by calling the content endpoint which redirects to the actual file
-
-      // Use fetch with the API directly
-      const response = await fetch(
-        `https://api.castari.com/api/v1/files/${encodeURIComponent(fileId)}/content`,
-        {
-          redirect: 'follow',
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Download failed: ${response.statusText}`);
-      }
+      // Download file content via SDK (uses configured base URL and auth)
+      const response = await client.files.download(fileId);
 
       // Write to file
       const arrayBuffer = await response.arrayBuffer();

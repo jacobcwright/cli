@@ -1,7 +1,7 @@
 /**
  * Agent status values
  */
-export type AgentStatus = 'draft' | 'pending' | 'deploying' | 'active' | 'stopped' | 'failed';
+export type AgentStatus = 'draft' | 'deploying' | 'active' | 'stopped' | 'error';
 
 /**
  * Agent source type
@@ -46,6 +46,93 @@ export interface Agent {
  */
 export interface AgentsListResponse {
   agents: Agent[];
+  meta: {
+    total: number;
+    limit: number;
+    offset: number;
+    has_more: boolean;
+  };
+}
+
+/**
+ * Options for updating an agent
+ */
+export interface UpdateAgentOptions {
+  name?: string;
+  description?: string;
+  gitRepoUrl?: string;
+  gitBranch?: string;
+  defaultModel?: string;
+  maxTurns?: number;
+  timeoutSeconds?: number;
+}
+
+/**
+ * API key info returned from multi-key endpoints
+ */
+export interface ApiKeyInfo {
+  id: string;
+  name: string;
+  prefix: string;
+  created_at: string;
+  last_used_at: string | null;
+}
+
+/**
+ * Response from listing API keys
+ */
+export interface ApiKeyListResponse {
+  api_keys: ApiKeyInfo[];
+}
+
+/**
+ * Response from creating a new API key (multi-key)
+ */
+export interface ApiKeyCreateResponse {
+  api_key: ApiKeyInfo;
+  key: string;
+}
+
+/**
+ * A session for an agent
+ */
+export interface Session {
+  id: string;
+  agent_id: string;
+  sandbox_id: string | null;
+  created_at: string;
+  last_invocation_at: string | null;
+}
+
+/**
+ * Response from listing sessions
+ */
+export interface SessionListResponse {
+  sessions: Session[];
+}
+
+/**
+ * An invocation history item
+ */
+export interface InvocationHistoryItem {
+  id: string;
+  agent_id: string;
+  session_id: string;
+  prompt: string;
+  response_content: string;
+  input_tokens: number;
+  output_tokens: number;
+  total_cost_usd: number | string;
+  duration_ms: number;
+  status: 'completed' | 'failed';
+  created_at: string;
+}
+
+/**
+ * Response from listing invocations
+ */
+export interface InvocationListResponse {
+  invocations: InvocationHistoryItem[];
   meta: {
     total: number;
     limit: number;
@@ -180,7 +267,7 @@ export interface DailyUsage {
  * Client configuration options
  */
 export interface CastariClientOptions {
-  /** API key (starts with cap_) */
+  /** API key (starts with cast_) */
   apiKey?: string;
   /** OAuth token */
   token?: string;

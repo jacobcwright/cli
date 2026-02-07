@@ -20,7 +20,7 @@ import type { CastariClientOptions } from './types.js'
  * const client = new CastariClient();
  *
  * // Or provide credentials explicitly
- * const client = new CastariClient({ apiKey: 'cap_xxxxx' });
+ * const client = new CastariClient({ apiKey: 'cast_xxxxx' });
  *
  * // List agents
  * const agents = await client.agents.list();

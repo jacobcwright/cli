@@ -25,11 +25,11 @@ function formatStatus(status: string): string {
       return chalk.green(status);
     case 'deploying':
       return chalk.yellow(status);
-    case 'pending':
+    case 'draft':
       return chalk.blue(status);
     case 'stopped':
       return chalk.gray(status);
-    case 'failed':
+    case 'error':
       return chalk.red(status);
     default:
       return status;
@@ -188,6 +188,58 @@ const deleteCommand = new Command('delete')
       await client.agents.delete(slug);
       spinner.succeed(`Agent '${slug}' deleted`);
     } catch (err) {
+      handleError(err);
+    }
+  });
+
+/**
+ * cast agents update <slug>
+ */
+const updateCommand = new Command('update')
+  .description('Update an agent configuration')
+  .argument('<slug>', 'Agent slug')
+  .option('--name <name>', 'New display name')
+  .option('--description <description>', 'New description')
+  .option('--git-url <url>', 'New git repository URL')
+  .option('--git-branch <branch>', 'New git branch')
+  .option('--model <model>', 'Default model')
+  .option('--max-turns <turns>', 'Maximum turns per invocation')
+  .option('--timeout <seconds>', 'Timeout in seconds')
+  .action(async (slug: string, options: {
+    name?: string;
+    description?: string;
+    gitUrl?: string;
+    gitBranch?: string;
+    model?: string;
+    maxTurns?: string;
+    timeout?: string;
+  }) => {
+    const spinner = ora('Updating agent...').start();
+
+    try {
+      const client = new CastariClient();
+      await client.ensureAuthenticated();
+
+      const agent = await client.agents.update(slug, {
+        name: options.name,
+        description: options.description,
+        gitRepoUrl: options.gitUrl,
+        gitBranch: options.gitBranch,
+        defaultModel: options.model,
+        maxTurns: options.maxTurns ? parseInt(options.maxTurns, 10) : undefined,
+        timeoutSeconds: options.timeout ? parseInt(options.timeout, 10) : undefined,
+      });
+
+      spinner.succeed(`Agent '${slug}' updated`);
+      blank();
+      keyValue('Name', agent.name);
+      keyValue('Status', formatStatus(agent.status));
+      keyValue('Model', agent.default_model);
+      keyValue('Max Turns', agent.max_turns);
+      keyValue('Timeout', `${agent.timeout_seconds}s`);
+      blank();
+    } catch (err) {
+      spinner.fail('Failed to update agent');
       handleError(err);
     }
   });
@@ -364,5 +416,6 @@ export const agentsCommand = new Command('agents')
   .addCommand(listCommand)
   .addCommand(createCommand)
   .addCommand(getCommand)
+  .addCommand(updateCommand)
   .addCommand(deleteCommand)
   .addCommand(filesCommand);

@@ -16,6 +16,8 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "lint": "eslint packages/*/src",
+    "format": "prettier --write 'packages/*/src/**/*.ts'",
+    "format:check": "prettier --check 'packages/*/src/**/*.ts'",
     "clean": "rm -rf packages/*/dist",
     "typecheck": "pnpm -r typecheck",
     "changeset": "changeset",
@@ -28,6 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.0.0",
+    "prettier": "^3.2.0",
     "typescript": "^5.3.0",
     "vitest": "^4.0.18"
   },

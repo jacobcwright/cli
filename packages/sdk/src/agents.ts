@@ -3,10 +3,15 @@ import type {
   Agent,
   AgentsListResponse,
   CreateAgentOptions,
+  UpdateAgentOptions,
   InvocationResponse,
   InvokeOptions,
   Secret,
   UploadResponse,
+  SessionListResponse,
+  Session,
+  InvocationListResponse,
+  InvocationHistoryItem,
 } from './types.js';
 
 /**
@@ -56,6 +61,26 @@ export class AgentsAPI {
    */
   async get(slug: string): Promise<Agent> {
     return this.client.request<Agent>('GET', `/agents/${encodeURIComponent(slug)}`);
+  }
+
+  /**
+   * Update an agent's configuration
+   * @param slug - The agent's unique slug
+   * @param options - Fields to update
+   * @returns The updated agent
+   * @throws NotFoundError if agent doesn't exist
+   */
+  async update(slug: string, options: UpdateAgentOptions): Promise<Agent> {
+    const body: Record<string, unknown> = {};
+    if (options.name !== undefined) body.name = options.name;
+    if (options.description !== undefined) body.description = options.description;
+    if (options.gitRepoUrl !== undefined) body.git_repo_url = options.gitRepoUrl;
+    if (options.gitBranch !== undefined) body.git_branch = options.gitBranch;
+    if (options.defaultModel !== undefined) body.default_model = options.defaultModel;
+    if (options.maxTurns !== undefined) body.max_turns = options.maxTurns;
+    if (options.timeoutSeconds !== undefined) body.timeout_seconds = options.timeoutSeconds;
+
+    return this.client.request<Agent>('PATCH', `/agents/${encodeURIComponent(slug)}`, { body });
   }
 
   /**
@@ -109,13 +134,12 @@ export class AgentsAPI {
   }
 
   /**
-   * Stop a running agent
+   * Stop a running agent by destroying its sandbox
    * @param slug - The agent's unique slug
-   * @returns The updated agent with status 'stopped'
    * @throws NotFoundError if agent doesn't exist
    */
-  async stop(slug: string): Promise<Agent> {
-    return this.client.request<Agent>('POST', `/agents/${encodeURIComponent(slug)}/stop`);
+  async stop(slug: string): Promise<void> {
+    return this.client.request<void>('DELETE', `/${encodeURIComponent(slug)}/sandbox`);
   }
 
   /**
@@ -172,5 +196,65 @@ export class AgentsAPI {
       'DELETE',
       `/agents/${encodeURIComponent(slug)}/secrets/${encodeURIComponent(key)}`
     );
+  }
+
+  /**
+   * Redeploy an agent (rebuild sandbox from latest code)
+   * @param slug - The agent's unique slug
+   * @returns The updated agent
+   * @throws NotFoundError if agent doesn't exist
+   */
+  async redeploy(slug: string): Promise<Agent> {
+    return this.client.request<Agent>('POST', `/agents/${encodeURIComponent(slug)}/redeploy`, {
+      timeout: 120000,
+    });
+  }
+
+  /**
+   * List sessions for an agent
+   * @param slug - The agent's unique slug
+   * @returns Array of sessions
+   */
+  async listSessions(slug: string): Promise<Session[]> {
+    const response = await this.client.request<SessionListResponse>(
+      'GET',
+      `/agents/${encodeURIComponent(slug)}/sessions`
+    );
+    return response.sessions;
+  }
+
+  /**
+   * Delete a session
+   * @param slug - The agent's unique slug
+   * @param sessionId - The session ID to delete
+   */
+  async deleteSession(slug: string, sessionId: string): Promise<void> {
+    return this.client.request<void>(
+      'DELETE',
+      `/agents/${encodeURIComponent(slug)}/sessions/${encodeURIComponent(sessionId)}`
+    );
+  }
+
+  /**
+   * List invocation history for an agent
+   * @param slug - The agent's unique slug
+   * @param options - Optional filter options
+   * @returns Array of invocation history items
+   */
+  async listInvocations(
+    slug: string,
+    options?: { status?: string; limit?: number; offset?: number }
+  ): Promise<InvocationHistoryItem[]> {
+    const query: Record<string, string | number | undefined> = {};
+    if (options?.status) query.status = options.status;
+    if (options?.limit) query.limit = options.limit;
+    if (options?.offset) query.offset = options.offset;
+
+    const response = await this.client.request<InvocationListResponse>(
+      'GET',
+      `/agents/${encodeURIComponent(slug)}/invocations`,
+      { query }
+    );
+    return response.invocations;
   }
 }

@@ -1,5 +1,5 @@
 import type { HttpClient } from './http.js';
-import type { User, ApiKeyResponse } from './types.js';
+import type { User, ApiKeyResponse, ApiKeyInfo, ApiKeyListResponse, ApiKeyCreateResponse } from './types.js';
 
 /**
  * API for authentication operations
@@ -17,19 +17,34 @@ export class AuthAPI {
   }
 
   /**
-   * Create a new API key for the authenticated user
-   * @returns The new API key (only shown once)
-   * @throws BadRequestError if user already has an API key
+   * List all API keys for the authenticated user
+   * @returns Array of API key info
    */
-  async createApiKey(): Promise<ApiKeyResponse> {
-    return this.client.request<ApiKeyResponse>('POST', '/auth/api-key');
+  async listApiKeys(): Promise<ApiKeyInfo[]> {
+    const response = await this.client.request<ApiKeyListResponse>('GET', '/api-keys');
+    return response.api_keys;
   }
 
   /**
-   * Revoke the user's API key
-   * @throws BadRequestError if user has no API key
+   * Create a new named API key
+   * @param name - Name for the API key (e.g., 'Production', 'Development')
+   * @returns The new API key (full key only shown once)
    */
-  async revokeApiKey(): Promise<void> {
+  async createApiKey(name?: string): Promise<ApiKeyCreateResponse> {
+    return this.client.request<ApiKeyCreateResponse>('POST', '/api-keys', {
+      body: { name: name ?? 'Default' },
+    });
+  }
+
+  /**
+   * Revoke an API key by ID
+   * @param keyId - The API key ID to revoke
+   */
+  async revokeApiKey(keyId?: string): Promise<void> {
+    if (keyId) {
+      return this.client.request<void>('DELETE', `/api-keys/${encodeURIComponent(keyId)}`);
+    }
+    // Legacy fallback for single-key endpoint
     return this.client.request<void>('DELETE', '/auth/api-key');
   }
 }

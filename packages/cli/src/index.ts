@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { createRequire } from 'node:module';
 import { loginCommand } from './commands/login.js';
 import { logoutCommand } from './commands/logout.js';
 import { whoamiCommand } from './commands/whoami.js';
@@ -14,13 +15,18 @@ import { initCommand } from './commands/init.js';
 import { bucketsCommand } from './commands/buckets.js';
 import { mountsCommand } from './commands/mounts.js';
 import { filesCommand } from './commands/files.js';
+import { sessionsCommand } from './commands/sessions.js';
+import { invocationsCommand } from './commands/invocations.js';
+
+const require = createRequire(import.meta.url);
+const { version } = require('../package.json') as { version: string };
 
 const program = new Command();
 
 program
   .name('cast')
   .description('Castari CLI - Deploy AI agents with one command')
-  .version('0.1.0');
+  .version(version);
 
 // Auth commands
 program.addCommand(loginCommand);
@@ -51,6 +57,10 @@ program.addCommand(initCommand);
 program.addCommand(bucketsCommand);
 program.addCommand(mountsCommand);
 program.addCommand(filesCommand);
+
+// Sessions & Invocations
+program.addCommand(sessionsCommand);
+program.addCommand(invocationsCommand);
 
 // Parse arguments
 program.parse();

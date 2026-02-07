@@ -41,7 +41,11 @@ export type {
   AgentSourceType,
   AgentStatus,
   ApiKeyResponse,
+  ApiKeyInfo,
+  ApiKeyListResponse,
+  ApiKeyCreateResponse,
   CreateAgentOptions,
+  UpdateAgentOptions,
   InvocationResponse,
   InvokeOptions,
   Secret,
@@ -53,6 +57,12 @@ export type {
   DailyUsageResponse,
   CastariClientOptions,
   ApiErrorResponse,
+  // Session types
+  Session,
+  SessionListResponse,
+  // Invocation history types
+  InvocationHistoryItem,
+  InvocationListResponse,
   // Storage types
   StorageProvider,
   Bucket,

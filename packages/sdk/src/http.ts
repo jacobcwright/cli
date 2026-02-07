@@ -134,6 +134,88 @@ export class HttpClient {
   }
 
   /**
+   * Get the base URL for API requests
+   */
+  getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
+  /**
+   * Make an HTTP request and return the raw Response (for binary downloads, etc.)
+   */
+  async rawRequest(
+    method: HttpMethod,
+    path: string,
+    options?: {
+      query?: Record<string, string | number | undefined>;
+      timeout?: number;
+    }
+  ): Promise<Response> {
+    const url = new URL(`/api/v1${path}`, this.baseUrl);
+
+    // Add query parameters
+    if (options?.query) {
+      for (const [key, value] of Object.entries(options.query)) {
+        if (value !== undefined) {
+          url.searchParams.set(key, String(value));
+        }
+      }
+    }
+
+    // Build headers
+    const headers: Record<string, string> = {};
+
+    // Add auth header
+    if (this.authValue) {
+      headers['Authorization'] = `Bearer ${this.authValue}`;
+    }
+
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeout = options?.timeout ?? 120000;
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url.toString(), {
+        method,
+        headers,
+        signal: controller.signal,
+        redirect: 'follow',
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const contentType = response.headers.get('content-type');
+        let data: unknown;
+        if (contentType?.includes('application/json')) {
+          data = await response.json();
+        } else {
+          data = await response.text();
+        }
+        this.handleError(response.status, data, response.headers);
+      }
+
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof CastariError) {
+        throw error;
+      }
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new CastariError('Request timed out');
+        }
+        throw new CastariError(`Request failed: ${error.message}`);
+      }
+
+      throw new CastariError('An unexpected error occurred');
+    }
+  }
+
+  /**
    * Make a multipart form-data request for file uploads
    */
   async requestMultipart<T>(

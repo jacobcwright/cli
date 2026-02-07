@@ -11,6 +11,9 @@ import { invokeCommand } from './commands/invoke.js';
 import { secretsCommand } from './commands/secrets.js';
 import { usageCommand } from './commands/usage.js';
 import { initCommand } from './commands/init.js';
+import { bucketsCommand } from './commands/buckets.js';
+import { mountsCommand } from './commands/mounts.js';
+import { filesCommand } from './commands/files.js';
 
 const program = new Command();
 
@@ -43,6 +46,11 @@ program.addCommand(usageCommand);
 
 // Project initialization
 program.addCommand(initCommand);
+
+// Storage management
+program.addCommand(bucketsCommand);
+program.addCommand(mountsCommand);
+program.addCommand(filesCommand);
 
 // Parse arguments
 program.parse();

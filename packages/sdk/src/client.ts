@@ -2,6 +2,9 @@ import { HttpClient } from './http.js'
 import { AgentsAPI } from './agents.js'
 import { UsageAPI } from './usage.js'
 import { AuthAPI } from './auth.js'
+import { StorageAPI } from './storage.js'
+import { MountsAPI } from './mounts.js'
+import { FilesAPI } from './files.js'
 import { getApiUrl, getAuth } from './config.js'
 import { AuthenticationError } from './errors.js'
 import type { CastariClientOptions } from './types.js'
@@ -44,6 +47,15 @@ export class CastariClient {
   /** API for authentication operations */
   readonly auth: AuthAPI
 
+  /** API for managing storage buckets */
+  readonly storage: StorageAPI
+
+  /** API for managing agent mounts */
+  readonly mounts: MountsAPI
+
+  /** API for managed file storage (Storage v2) */
+  readonly files: FilesAPI
+
   /**
    * Create a new Castari client
    * @param options - Client configuration options
@@ -72,6 +84,9 @@ export class CastariClient {
     this.agents = new AgentsAPI(this.httpClient)
     this.usage = new UsageAPI(this.httpClient)
     this.auth = new AuthAPI(this.httpClient)
+    this.storage = new StorageAPI(this.httpClient)
+    this.mounts = new MountsAPI(this.httpClient)
+    this.files = new FilesAPI(this.httpClient)
   }
 
   /**

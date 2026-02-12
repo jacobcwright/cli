@@ -21,7 +21,7 @@ Define your agent. Run `cast deploy`. It's live.
 
 ---
 
-Castari is the fastest way to go from an AI agent idea to a production deployment. Build your agent with the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk) and `cast deploy` handles the rest — packaging, infrastructure, and isolated sandboxes. No Docker. No Kubernetes. No infra to manage.
+Castari is the fastest way to go from an AI agent idea to a production deployment. Build your agent with the [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview) and `cast deploy` handles the rest — packaging, infrastructure, and isolated sandboxes. No Docker. No Kubernetes. No infra to manage.
 
 ## Install
 
@@ -85,7 +85,7 @@ You write code          Castari handles infra         Users invoke agents
 
 ## Build Your Agent
 
-Castari deploys agents built with the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk). The SDK gives you the same tools, agent loop, and context management that power Claude Code — programmable in TypeScript.
+Castari deploys agents built with the [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview). The SDK gives you the same tools, agent loop, and context management that power Claude Code — programmable in TypeScript.
 
 ```typescript
 // src/index.ts
@@ -106,7 +106,7 @@ cast invoke my-agent "Refactor this function to use async/await"
 
 Your agent code is your agent. Castari just gets it running in production.
 
-New to the Agent SDK? Check out the [official getting started guide](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk).
+New to the Agent SDK? Check out the [official getting started guide](https://platform.claude.com/docs/en/agent-sdk/overview).
 
 ## CLI Commands
 
@@ -137,7 +137,7 @@ Your agent just needs a `castari.json` at the project root:
 }
 ```
 
-The `entrypoint` points to your agent code — a TypeScript file using the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk).
+The `entrypoint` points to your agent code — a TypeScript file using the [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview).
 
 **Environment variables:**
 

@@ -1,0 +1,21 @@
+{
+  "name": "castari",
+  "title": "Castari — Deploy AI Agents",
+  "description": "Deploy custom Claude AI agents to production with one command. Scaffolds castari.json, authenticates, and deploys to isolated cloud sandboxes.",
+  "repository": "https://github.com/castari/cli",
+  "keywords": [
+    "deploy",
+    "agents",
+    "production",
+    "castari",
+    "claude",
+    "sandbox",
+    "ai-agents"
+  ],
+  "skills": [
+    {
+      "name": "castari-deploy",
+      "path": "skills/castari-deploy/SKILL.md"
+    }
+  ]
+}

@@ -23,6 +23,18 @@ Define your agent. Run `cast deploy`. It's live.
 
 Castari is the fastest way to go from an AI agent idea to a production deployment. Build your agent with the [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview) and `cast deploy` handles the rest — packaging, infrastructure, and isolated sandboxes. No Docker. No Kubernetes. No infra to manage.
 
+## Why Castari
+
+### Your agent gets its own computer
+
+Every deployed agent runs in an isolated cloud sandbox — a real machine with a filesystem, a shell, and a package manager. Your agent can read and write files, install dependencies, run code, and iterate on its own output. It's not a text-completion endpoint with tool definitions bolted on. It's a computer.
+
+This is the difference between an agent that *suggests* a fix and one that actually opens the file, edits it, runs the tests, and keeps going until they pass.
+
+### No risk to your machine or your users' machines
+
+AI agents that run locally inherit every permission you have — SSH keys, environment variables, credentials, production databases. One prompt injection or hallucinated command and the blast radius is your entire system. Castari eliminates this by running agents in isolated sandboxes where they can work freely without putting anything else at risk. No permission prompts. No `--dangerously-skip-permissions`. Just a safe environment where agents can do real work.
+
 ## Install
 
 ```bash
@@ -81,9 +93,9 @@ You write code          Castari handles infra         Users invoke agents
                         └──────────────────┘
 ```
 
-1. **Define** — `castari.json` configures your agent (name, entrypoint, runtime). Your agent code in `src/` uses the Claude Agent SDK with whatever tools, MCP servers, or custom logic you need.
-2. **Deploy** — `cast deploy` packages your project and spins up an isolated sandbox with your agent ready to receive prompts.
-3. **Invoke** — Call your agent from the CLI, the REST API, or the [dashboard](https://app.castari.com).
+1. **Define** — `castari.json` configures your agent (name, entrypoint, runtime). Your agent code uses the Claude Agent SDK with whatever tools, MCP servers, or custom logic you need.
+2. **Deploy** — `cast deploy` packages your project and spins up an isolated sandbox — a real machine with a filesystem, shell access, and your dependencies installed. Your agent is ready to receive prompts.
+3. **Invoke** — Call your agent from the CLI, the REST API, or the [dashboard](https://app.castari.com). Each session gets its own sandbox, so agents can work with files and state without stepping on each other.
 
 ## Build Your Agent
 

@@ -106,6 +106,8 @@ cast invoke my-agent "Refactor this function to use async/await"
 
 Your agent code is your agent. Castari just gets it running in production.
 
+New to the Agent SDK? Check out the [official getting started guide](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk).
+
 ## CLI Commands
 
 The CLI gives you full control over the agent lifecycle:

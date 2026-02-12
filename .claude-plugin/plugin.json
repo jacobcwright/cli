@@ -1,0 +1,8 @@
+{
+  "name": "castari",
+  "description": "Deploy custom Claude AI agents to production with one command. Handles scaffolding, authentication, and deployment to isolated cloud sandboxes.",
+  "author": {
+    "name": "Castari",
+    "email": "founders@castari.com"
+  }
+}

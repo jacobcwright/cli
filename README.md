@@ -21,7 +21,7 @@ Define your agent. Run `cast deploy`. It's live.
 
 ---
 
-Castari is the fastest way to go from an AI agent idea to a production deployment. Build your agent with the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk), define a system prompt, and `cast deploy` handles the rest — packaging, infrastructure, and isolated sandboxes. No Docker. No Kubernetes. No infra to manage.
+Castari is the fastest way to go from an AI agent idea to a production deployment. Build your agent with the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk) and `cast deploy` handles the rest — packaging, infrastructure, and isolated sandboxes. No Docker. No Kubernetes. No infra to manage.
 
 ## Install
 
@@ -65,7 +65,7 @@ Castari ships with starter templates to get you going:
 | `cast init --template mcp-tools` | Agent with custom [MCP](https://modelcontextprotocol.io) tool servers |
 | `cast init --template support-agent` | Customer support agent with knowledge base access |
 
-Or start from scratch — any repo with a `castari.json` and a `CLAUDE.md` system prompt is deployable.
+Or start from scratch — any repo with a `castari.json` is deployable.
 
 ## How It Works
 
@@ -73,13 +73,13 @@ Or start from scratch — any repo with a `castari.json` and a `CLAUDE.md` syste
 You write code          Castari handles infra         Users invoke agents
 ┌─────────────┐        ┌──────────────────┐          ┌─────────────────┐
 │ castari.json │──────▶ │  cast deploy     │ ──────▶  │ cast invoke     │
-│ CLAUDE.md    │  push  │  ┌────────────┐  │  ready   │   API / CLI     │
-│ src/         │        │  │  Sandbox   │  │          │                 │
+│ src/index.ts │  push  │  ┌────────────┐  │  ready   │   API / CLI     │
+│              │        │  │  Sandbox   │  │          │                 │
 └─────────────┘        │  └────────────┘  │          └─────────────────┘
                         └──────────────────┘
 ```
 
-1. **Define** — `castari.json` configures your agent (name, entrypoint, runtime). `CLAUDE.md` is the system prompt. Add tools, MCP servers, or custom logic in `src/`.
+1. **Define** — `castari.json` configures your agent (name, entrypoint, runtime). Your agent code in `src/` uses the Claude Agent SDK with whatever tools, MCP servers, or custom logic you need.
 2. **Deploy** — `cast deploy` packages your project and spins up an isolated sandbox with your agent ready to receive prompts.
 3. **Invoke** — Call your agent from the CLI, the REST API, or the [dashboard](https://app.castari.com).
 
@@ -128,9 +128,8 @@ cast usage                          # Monitor usage and costs
 
 ## Configuration
 
-Your agent is defined by two files at the project root:
+Your agent just needs a `castari.json` at the project root:
 
-**`castari.json`** — Agent metadata:
 ```json
 {
   "name": "my-agent",
@@ -140,7 +139,7 @@ Your agent is defined by two files at the project root:
 }
 ```
 
-**`CLAUDE.md`** — System prompt that defines your agent's personality, capabilities, and instructions.
+The `entrypoint` points to your agent code — a TypeScript file using the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk).
 
 **Environment variables:**
 

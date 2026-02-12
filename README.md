@@ -35,6 +35,8 @@ Verify it worked:
 cast --version
 ```
 
+> **Using [Claude Code](https://claude.ai/code)?** Skip the manual setup — type `/castari-deploy` and the skill handles install, auth, scaffolding, and deployment for you. Install it with `npx skills add castari/cli`.
+
 ## Quick Start
 
 ```bash

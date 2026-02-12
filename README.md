@@ -7,7 +7,6 @@
 Define your agent. Run `cast deploy`. It's live.
 
 [![npm version](https://img.shields.io/npm/v/@castari/cli.svg?style=flat-square)](https://www.npmjs.com/package/@castari/cli)
-[![SDK](https://img.shields.io/npm/v/@castari/sdk.svg?style=flat-square&label=sdk)](https://www.npmjs.com/package/@castari/sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square)](https://nodejs.org)
 
@@ -22,7 +21,7 @@ Define your agent. Run `cast deploy`. It's live.
 
 ---
 
-Castari is the fastest way to go from an AI agent idea to a production deployment. Write your agent logic, define a system prompt, and `cast deploy` handles the rest — packaging, infrastructure, and isolated [E2B sandboxes](https://e2b.dev). No Docker. No Kubernetes. No infra to manage.
+Castari is the fastest way to go from an AI agent idea to a production deployment. Build your agent with the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk), define a system prompt, and `cast deploy` handles the rest — packaging, infrastructure, and isolated sandboxes. No Docker. No Kubernetes. No infra to manage.
 
 ## Install
 
@@ -74,39 +73,42 @@ Or start from scratch — any repo with a `castari.json` and a `CLAUDE.md` syste
 You write code          Castari handles infra         Users invoke agents
 ┌─────────────┐        ┌──────────────────┐          ┌─────────────────┐
 │ castari.json │──────▶ │  cast deploy     │ ──────▶  │ cast invoke     │
-│ CLAUDE.md    │  push  │  ┌────────────┐  │  ready   │ SDK / API / CLI │
-│ src/         │        │  │ E2B Sandbox│  │          │                 │
+│ CLAUDE.md    │  push  │  ┌────────────┐  │  ready   │   API / CLI     │
+│ src/         │        │  │  Sandbox   │  │          │                 │
 └─────────────┘        │  └────────────┘  │          └─────────────────┘
                         └──────────────────┘
 ```
 
 1. **Define** — `castari.json` configures your agent (name, entrypoint, runtime). `CLAUDE.md` is the system prompt. Add tools, MCP servers, or custom logic in `src/`.
-2. **Deploy** — `cast deploy` packages your project and spins up an isolated E2B sandbox with your agent ready to receive prompts.
-3. **Invoke** — Call your agent from the CLI, the TypeScript SDK, the REST API, or the [dashboard](https://app.castari.com).
+2. **Deploy** — `cast deploy` packages your project and spins up an isolated sandbox with your agent ready to receive prompts.
+3. **Invoke** — Call your agent from the CLI, the REST API, or the [dashboard](https://app.castari.com).
 
-## SDK
+## Build Your Agent
 
-Build agents into your own apps with `@castari/sdk`:
-
-```bash
-npm install @castari/sdk
-```
+Castari deploys agents built with the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk). Write your agent in TypeScript, give it tools, connect MCP servers — then deploy it with a single command.
 
 ```typescript
-import { CastariClient } from '@castari/sdk';
+// src/index.ts
+import Anthropic from "@anthropic-ai/sdk";
 
-const client = new CastariClient({ apiKey: process.env.CASTARI_API_KEY });
+const client = new Anthropic();
 
-// Deploy and invoke
-await client.agents.deploy('my-agent');
-const result = await client.agents.invoke('my-agent', {
-  prompt: 'Analyze this dataset and summarize key trends.',
+const response = await client.messages.create({
+  model: "claude-sonnet-4-5-20250929",
+  max_tokens: 1024,
+  system: "You are a helpful coding assistant.",
+  messages: [{ role: "user", content: process.argv[2] }],
 });
 
-console.log(result.response_content);
+console.log(response.content[0].text);
 ```
 
-The SDK covers every API surface — agents, secrets, sessions, storage, usage, and more. [Full SDK reference &rarr;](https://docs.castari.com/sdk/overview)
+```bash
+cast deploy
+cast invoke my-agent "Refactor this function to use async/await"
+```
+
+Your agent code is your agent. Castari just gets it running in production.
 
 ## CLI Commands
 
@@ -174,12 +176,5 @@ MIT — see [LICENSE](LICENSE) for details.
 <div align="center">
 
 **[Get started in 60 seconds &rarr;](https://docs.castari.com/quickstart)**
-
-<br>
-
-<sub>Backed by</sub>
-
-[![E2B](https://img.shields.io/badge/E2B-ff8800?style=flat-square)](https://e2b.dev)
-[![Daytona](https://img.shields.io/badge/Daytona-000000?style=flat-square)](https://daytona.io)
 
 </div>

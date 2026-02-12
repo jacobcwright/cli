@@ -82,13 +82,13 @@ Or start from scratch — any repo with a `castari.json` is deployable.
 ## How It Works
 
 ```
-You write code          Castari handles infra         Users invoke agents
-┌─────────────┐        ┌──────────────────┐          ┌─────────────────┐
-│ castari.json │──────▶ │  cast deploy     │ ──────▶  │ cast invoke     │
-│ src/index.ts │  push  │  ┌────────────┐  │  ready   │   API / CLI     │
-│              │        │  │  Sandbox   │  │          │                 │
-└─────────────┘        │  └────────────┘  │          └─────────────────┘
-                        └──────────────────┘
+You write code         Castari handles infra        Users invoke agents
+┌──────────────┐       ┌───────────────────┐        ┌──────────────────┐
+│ castari.json │       │  cast deploy      │        │  cast invoke     │
+│ src/index.ts │─────▶ │  ┌─────────────┐  │──────▶ │  API / CLI       │
+│              │ push  │  │   Sandbox   │  │ ready  │                  │
+└──────────────┘       │  └─────────────┘  │        └──────────────────┘
+                       └───────────────────┘
 ```
 
 1. **Define** — `castari.json` configures your agent (name, entrypoint, runtime). Your agent code uses the Claude Agent SDK with whatever tools, MCP servers, or custom logic you need.

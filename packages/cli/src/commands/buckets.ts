@@ -34,56 +34,54 @@ function formatCredentials(hasCredentials: boolean): string {
 /**
  * cast buckets list
  */
-const listCommand = new Command('list')
-  .description('List all storage buckets')
-  .action(async () => {
-    const spinner = ora('Fetching buckets...').start();
+const listCommand = new Command('list').description('List all storage buckets').action(async () => {
+  const spinner = ora('Fetching buckets...').start();
 
-    try {
-      const client = new CastariClient();
-      await client.ensureAuthenticated();
-      const buckets = await client.storage.getBuckets();
+  try {
+    const client = new CastariClient();
+    await client.ensureAuthenticated();
+    const buckets = await client.storage.getBuckets();
 
-      spinner.stop();
+    spinner.stop();
 
-      if (buckets.length === 0) {
-        info('No buckets found');
-        hint("Create one with 'cast buckets create <name>'");
-        return;
-      }
-
-      const table = new Table({
-        head: [
-          chalk.white('Slug'),
-          chalk.white('Name'),
-          chalk.white('Provider'),
-          chalk.white('Bucket'),
-          chalk.white('Credentials'),
-          chalk.white('Created'),
-        ],
-        style: {
-          head: [],
-          border: [],
-        },
-      });
-
-      for (const bucket of buckets) {
-        table.push([
-          bucket.slug,
-          bucket.name,
-          formatProvider(bucket.provider),
-          bucket.bucket_name,
-          formatCredentials(bucket.has_credentials),
-          formatDate(bucket.created_at),
-        ]);
-      }
-
-      console.log(table.toString());
-    } catch (err) {
-      spinner.fail('Failed to list buckets');
-      handleError(err);
+    if (buckets.length === 0) {
+      info('No buckets found');
+      hint("Create one with 'cast buckets create <name>'");
+      return;
     }
-  });
+
+    const table = new Table({
+      head: [
+        chalk.white('Slug'),
+        chalk.white('Name'),
+        chalk.white('Provider'),
+        chalk.white('Bucket'),
+        chalk.white('Credentials'),
+        chalk.white('Created'),
+      ],
+      style: {
+        head: [],
+        border: [],
+      },
+    });
+
+    for (const bucket of buckets) {
+      table.push([
+        bucket.slug,
+        bucket.name,
+        formatProvider(bucket.provider),
+        bucket.bucket_name,
+        formatCredentials(bucket.has_credentials),
+        formatDate(bucket.created_at),
+      ]);
+    }
+
+    console.log(table.toString());
+  } catch (err) {
+    spinner.fail('Failed to list buckets');
+    handleError(err);
+  }
+});
 
 /**
  * cast buckets create <name>
@@ -168,7 +166,11 @@ const createCommand = new Command('create')
 
         // Generate slug from name if not provided
         const slug =
-          options.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+          options.slug ||
+          name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
 
         const spinner = ora('Creating bucket...').start();
 
@@ -333,7 +335,9 @@ const credentialsCommand = new Command('credentials')
             // Validate it's valid JSON
             JSON.parse(serviceAccountJson);
           } catch {
-            handleError(new Error(`Failed to read service account file: ${options.serviceAccountFile}`));
+            handleError(
+              new Error(`Failed to read service account file: ${options.serviceAccountFile}`)
+            );
           }
         }
 
@@ -356,7 +360,9 @@ const credentialsCommand = new Command('credentials')
               serviceAccountJson = await readFile(response.serviceAccountFile, 'utf-8');
               JSON.parse(serviceAccountJson);
             } catch {
-              handleError(new Error(`Failed to read service account file: ${response.serviceAccountFile}`));
+              handleError(
+                new Error(`Failed to read service account file: ${response.serviceAccountFile}`)
+              );
             }
           } else {
             // S3 or R2

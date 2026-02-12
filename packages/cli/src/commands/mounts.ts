@@ -112,7 +112,7 @@ const addCommand = new Command('add')
 
           if (buckets.length === 0) {
             info('No buckets available');
-            hint("Create one with: cast buckets create <name>");
+            hint('Create one with: cast buckets create <name>');
             return;
           }
 
@@ -131,8 +131,7 @@ const addCommand = new Command('add')
               name: 'path',
               message: 'Mount path (e.g., /data)',
               initial: '/data',
-              validate: (value) =>
-                value.startsWith('/') ? true : 'Mount path must start with /',
+              validate: (value) => (value.startsWith('/') ? true : 'Mount path must start with /'),
             },
             {
               type: sourcePrefix !== undefined ? null : 'text',

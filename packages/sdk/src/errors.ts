@@ -19,7 +19,7 @@ export class CastariError extends Error {
  * Error thrown when authentication fails or is missing
  */
 export class AuthenticationError extends CastariError {
-  constructor(message = 'Authentication failed. Run \'cast login\' to authenticate.') {
+  constructor(message = "Authentication failed. Run 'cast login' to authenticate.") {
     super(message, { statusCode: 401 });
     this.name = 'AuthenticationError';
   }

@@ -170,7 +170,10 @@ export class AgentsAPI {
    * @returns Array of secret key names
    */
   async listSecrets(slug: string): Promise<Secret[]> {
-    const response = await this.client.request<{ secrets: Secret[] }>('GET', `/agents/${encodeURIComponent(slug)}/secrets`);
+    const response = await this.client.request<{ secrets: Secret[] }>(
+      'GET',
+      `/agents/${encodeURIComponent(slug)}/secrets`
+    );
     return response.secrets;
   }
 

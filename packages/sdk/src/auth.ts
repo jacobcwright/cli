@@ -1,5 +1,11 @@
 import type { HttpClient } from './http.js';
-import type { User, ApiKeyResponse, ApiKeyInfo, ApiKeyListResponse, ApiKeyCreateResponse } from './types.js';
+import type {
+  User,
+  ApiKeyResponse,
+  ApiKeyInfo,
+  ApiKeyListResponse,
+  ApiKeyCreateResponse,
+} from './types.js';
 
 /**
  * API for authentication operations

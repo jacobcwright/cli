@@ -9,50 +9,48 @@ import { handleError } from '../utils/errors.js';
 /**
  * cast apikey list
  */
-const listCommand = new Command('list')
-  .description('List all API keys')
-  .action(async () => {
-    const spinner = ora('Fetching API keys...').start();
+const listCommand = new Command('list').description('List all API keys').action(async () => {
+  const spinner = ora('Fetching API keys...').start();
 
-    try {
-      const client = new CastariClient();
-      await client.ensureAuthenticated();
-      const keys = await client.auth.listApiKeys();
+  try {
+    const client = new CastariClient();
+    await client.ensureAuthenticated();
+    const keys = await client.auth.listApiKeys();
 
-      spinner.stop();
+    spinner.stop();
 
-      if (keys.length === 0) {
-        info('No API keys found');
-        return;
-      }
-
-      const table = new Table({
-        head: [
-          chalk.white('ID'),
-          chalk.white('Name'),
-          chalk.white('Prefix'),
-          chalk.white('Created'),
-          chalk.white('Last Used'),
-        ],
-        style: { head: [], border: [] },
-      });
-
-      for (const key of keys) {
-        table.push([
-          key.id,
-          key.name,
-          key.prefix,
-          formatDate(key.created_at),
-          key.last_used_at ? formatDate(key.last_used_at) : chalk.gray('Never'),
-        ]);
-      }
-
-      console.log(table.toString());
-    } catch (err) {
-      spinner.fail('Failed to list API keys');
-      handleError(err);
+    if (keys.length === 0) {
+      info('No API keys found');
+      return;
     }
-  });
+
+    const table = new Table({
+      head: [
+        chalk.white('ID'),
+        chalk.white('Name'),
+        chalk.white('Prefix'),
+        chalk.white('Created'),
+        chalk.white('Last Used'),
+      ],
+      style: { head: [], border: [] },
+    });
+
+    for (const key of keys) {
+      table.push([
+        key.id,
+        key.name,
+        key.prefix,
+        formatDate(key.created_at),
+        key.last_used_at ? formatDate(key.last_used_at) : chalk.gray('Never'),
+      ]);
+    }
+
+    console.log(table.toString());
+  } catch (err) {
+    spinner.fail('Failed to list API keys');
+    handleError(err);
+  }
+});
 
 /**
  * cast apikey create

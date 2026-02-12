@@ -110,7 +110,7 @@ const listCommand = new Command('list')
 
         if (result.files.length === 0) {
           info('No files found');
-          hint("Upload a file with: cast files upload <path>");
+          hint('Upload a file with: cast files upload <path>');
           return;
         }
 
@@ -132,9 +132,7 @@ const listCommand = new Command('list')
         for (const file of result.files) {
           table.push([
             file.file_id,
-            file.filename.length > 28
-              ? file.filename.substring(0, 25) + '...'
-              : file.filename,
+            file.filename.length > 28 ? file.filename.substring(0, 25) + '...' : file.filename,
             formatSize(file.size_bytes),
             formatScope(file.scope),
             formatFileDate(file.created_at),
@@ -147,9 +145,7 @@ const listCommand = new Command('list')
           `Showing ${result.files.length} of ${formatNumber(result.meta.total)} file${result.meta.total === 1 ? '' : 's'}`
         );
         if (result.meta.has_more) {
-          hint(
-            `Use --offset ${result.meta.offset + result.meta.limit} to see more`
-          );
+          hint(`Use --offset ${result.meta.offset + result.meta.limit} to see more`);
         }
       } catch (err) {
         spinner.fail('Failed to list files');
@@ -166,103 +162,93 @@ const uploadCommand = new Command('upload')
   .argument('<path>', 'Local file path')
   .option('--description <desc>', 'File description')
   .option('--tags <tags>', 'Comma-separated tags')
-  .action(
-    async (
-      localPath: string,
-      options: { description?: string; tags?: string }
-    ) => {
+  .action(async (localPath: string, options: { description?: string; tags?: string }) => {
+    try {
+      const client = new CastariClient();
+      await client.ensureAuthenticated();
+
+      // Check if file exists and get size
+      let fileStats;
       try {
-        const client = new CastariClient();
-        await client.ensureAuthenticated();
-
-        // Check if file exists and get size
-        let fileStats;
-        try {
-          fileStats = await stat(localPath);
-        } catch {
-          handleError(new Error(`File not found: ${localPath}`));
-        }
-
-        if (!fileStats!.isFile()) {
-          handleError(new Error(`Not a file: ${localPath}`));
-        }
-
-        const filename = basename(localPath);
-        const fileSize = fileStats!.size;
-        const tags = options.tags?.split(',').map((t) => t.trim()) || [];
-
-        const spinner = ora(
-          `Uploading ${filename} (${formatSize(fileSize)})...`
-        ).start();
-
-        let result;
-
-        if (fileSize > PRESIGNED_UPLOAD_THRESHOLD) {
-          // Use presigned upload for large files
-          spinner.text = `Getting upload URL for ${filename}...`;
-
-          const presigned = await client.files.getUploadUrl(filename, fileSize, {
-            description: options.description,
-            tags,
-          });
-
-          spinner.text = `Uploading ${filename} (${formatSize(fileSize)})...`;
-
-          // Read file and calculate hash
-          const fileBuffer = await readFile(localPath);
-          const hash = sha256(fileBuffer);
-
-          // Upload to presigned URL
-          const uploadResponse = await fetch(presigned.upload_url, {
-            method: presigned.upload_method,
-            body: fileBuffer,
-            headers: presigned.upload_headers,
-          });
-
-          if (!uploadResponse.ok) {
-            throw new Error(`Upload failed: ${uploadResponse.statusText}`);
-          }
-
-          // Confirm upload
-          spinner.text = 'Confirming upload...';
-          const confirmed = await client.files.confirmUpload(
-            presigned.file_id,
-            hash
-          );
-
-          result = {
-            file_id: confirmed.file_id,
-            filename: confirmed.filename,
-            size_bytes: confirmed.size_bytes,
-          };
-        } else {
-          // Use direct multipart upload for small files
-          const fileBuffer = await readFile(localPath);
-          const blob = new Blob([fileBuffer]);
-
-          const uploadResult = await client.files.upload(blob, filename, {
-            description: options.description,
-            tags,
-          });
-
-          result = {
-            file_id: uploadResult.file_id,
-            filename: uploadResult.filename,
-            size_bytes: uploadResult.size_bytes,
-          };
-        }
-
-        spinner.succeed(`Uploaded ${result.filename}`);
-        blank();
-        keyValue('File ID', result.file_id);
-        keyValue('Size', formatSize(result.size_bytes));
-        blank();
-        hint(`Attach to agent: cast agents files add <agent-slug> ${result.file_id}`);
-      } catch (err) {
-        handleError(err);
+        fileStats = await stat(localPath);
+      } catch {
+        handleError(new Error(`File not found: ${localPath}`));
       }
+
+      if (!fileStats!.isFile()) {
+        handleError(new Error(`Not a file: ${localPath}`));
+      }
+
+      const filename = basename(localPath);
+      const fileSize = fileStats!.size;
+      const tags = options.tags?.split(',').map((t) => t.trim()) || [];
+
+      const spinner = ora(`Uploading ${filename} (${formatSize(fileSize)})...`).start();
+
+      let result;
+
+      if (fileSize > PRESIGNED_UPLOAD_THRESHOLD) {
+        // Use presigned upload for large files
+        spinner.text = `Getting upload URL for ${filename}...`;
+
+        const presigned = await client.files.getUploadUrl(filename, fileSize, {
+          description: options.description,
+          tags,
+        });
+
+        spinner.text = `Uploading ${filename} (${formatSize(fileSize)})...`;
+
+        // Read file and calculate hash
+        const fileBuffer = await readFile(localPath);
+        const hash = sha256(fileBuffer);
+
+        // Upload to presigned URL
+        const uploadResponse = await fetch(presigned.upload_url, {
+          method: presigned.upload_method,
+          body: fileBuffer,
+          headers: presigned.upload_headers,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+        }
+
+        // Confirm upload
+        spinner.text = 'Confirming upload...';
+        const confirmed = await client.files.confirmUpload(presigned.file_id, hash);
+
+        result = {
+          file_id: confirmed.file_id,
+          filename: confirmed.filename,
+          size_bytes: confirmed.size_bytes,
+        };
+      } else {
+        // Use direct multipart upload for small files
+        const fileBuffer = await readFile(localPath);
+        const blob = new Blob([fileBuffer]);
+
+        const uploadResult = await client.files.upload(blob, filename, {
+          description: options.description,
+          tags,
+        });
+
+        result = {
+          file_id: uploadResult.file_id,
+          filename: uploadResult.filename,
+          size_bytes: uploadResult.size_bytes,
+        };
+      }
+
+      spinner.succeed(`Uploaded ${result.filename}`);
+      blank();
+      keyValue('File ID', result.file_id);
+      keyValue('Size', formatSize(result.size_bytes));
+      blank();
+      hint(`Attach to agent: cast agents files add <agent-slug> ${result.file_id}`);
+    } catch (err) {
+      handleError(err);
     }
-  );
+  });
 
 /**
  * cast files get <file_id>
@@ -328,9 +314,7 @@ const deleteCommand = new Command('delete')
 
         const answer = await new Promise<string>((resolve) => {
           rl.question(
-            chalk.yellow(
-              `Are you sure you want to delete file '${fileId}'? [y/N] `
-            ),
+            chalk.yellow(`Are you sure you want to delete file '${fileId}'? [y/N] `),
             resolve
           );
         });
@@ -395,38 +379,35 @@ const downloadCommand = new Command('download')
 /**
  * cast files usage
  */
-const usageCommand = new Command('usage')
-  .description('Show storage usage')
-  .action(async () => {
-    const spinner = ora('Fetching storage usage...').start();
+const usageCommand = new Command('usage').description('Show storage usage').action(async () => {
+  const spinner = ora('Fetching storage usage...').start();
 
-    try {
-      const client = new CastariClient();
-      await client.ensureAuthenticated();
+  try {
+    const client = new CastariClient();
+    await client.ensureAuthenticated();
 
-      const usage = await client.files.getUsage();
+    const usage = await client.files.getUsage();
 
-      spinner.stop();
-      blank();
-      keyValue('Total Files', formatNumber(usage.total_files));
-      keyValue('Total Size', formatSize(usage.total_bytes));
-      keyValue('Quota Used', `${usage.usage_percent.toFixed(1)}%`);
-      keyValue('Quota Limit', `${usage.limit_mb} MB`);
-      blank();
+    spinner.stop();
+    blank();
+    keyValue('Total Files', formatNumber(usage.total_files));
+    keyValue('Total Size', formatSize(usage.total_bytes));
+    keyValue('Quota Used', `${usage.usage_percent.toFixed(1)}%`);
+    keyValue('Quota Limit', `${usage.limit_mb} MB`);
+    blank();
 
-      // Show progress bar
-      const barWidth = 40;
-      const filled = Math.round((usage.usage_percent / 100) * barWidth);
-      const empty = barWidth - filled;
-      const bar =
-        chalk.green('█'.repeat(filled)) + chalk.gray('░'.repeat(empty));
-      console.log(`  ${bar} ${usage.usage_percent.toFixed(1)}%`);
-      blank();
-    } catch (err) {
-      spinner.fail('Failed to get storage usage');
-      handleError(err);
-    }
-  });
+    // Show progress bar
+    const barWidth = 40;
+    const filled = Math.round((usage.usage_percent / 100) * barWidth);
+    const empty = barWidth - filled;
+    const bar = chalk.green('█'.repeat(filled)) + chalk.gray('░'.repeat(empty));
+    console.log(`  ${bar} ${usage.usage_percent.toFixed(1)}%`);
+    blank();
+  } catch (err) {
+    spinner.fail('Failed to get storage usage');
+    handleError(err);
+  }
+});
 
 /**
  * cast files

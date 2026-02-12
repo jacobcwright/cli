@@ -1,194 +1,180 @@
 <div align="center">
 
-# Castari CLI
+<img alt="Castari" src="./assets/logo.svg" height="60">
 
-**Deploy AI agents with one command.**
+### Deploy AI agents with one command.
+
+Define your agent. Run `cast deploy`. It's live.
 
 [![npm version](https://img.shields.io/npm/v/@castari/cli.svg?style=flat-square)](https://www.npmjs.com/package/@castari/cli)
-[![npm version](https://img.shields.io/npm/v/@castari/sdk.svg?style=flat-square&label=sdk)](https://www.npmjs.com/package/@castari/sdk)
-[![CI](https://img.shields.io/github/actions/workflow/status/castari/cli/ci.yml?branch=main&style=flat-square)](https://github.com/castari/cli/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square)](https://nodejs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-blue?style=flat-square)](https://www.typescriptlang.org)
 
-[Documentation](https://docs.castari.com) · [Dashboard](https://app.castari.com) · [API Reference](https://docs.castari.com/api-reference/introduction)
+[Documentation](https://docs.castari.com) &middot; [Dashboard](https://app.castari.com) &middot; [Discord](https://discord.gg/castari) &middot; [Examples](https://docs.castari.com/guides/templates)
 
 </div>
 
+<!-- TODO: Add terminal demo GIF here before launch
+     Record with: https://github.com/faressoft/terminalizer
+     Show: cast login → cast init → cast deploy → cast invoke
+     Keep under 15 seconds, optimize to <5MB -->
+
 ---
 
-## Features
+Castari is the fastest way to go from an AI agent idea to a production deployment. Build your agent with the [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview) and `cast deploy` handles the rest — packaging, infrastructure, and isolated sandboxes. No Docker. No Kubernetes. No infra to manage.
 
-- **One-command deploy** — `cast deploy` packages and ships your agent to an isolated sandbox
-- **Git or local** — Deploy from a Git repository or directly from your local project
-- **Full agent lifecycle** — Create, deploy, invoke, stop, redeploy, and manage sessions
-- **Multi-key auth** — Named API keys for Production, Development, CI/CD environments
-- **Storage v2** — Managed file storage with agent file attachments
-- **BYO Storage** — Mount S3, GCS, or R2 buckets directly into agent sandboxes
-- **TypeScript SDK** — Programmatic access to every API endpoint
-- **Usage tracking** — Monitor invocations, tokens, and costs
+## Why Castari
+
+### Every agent gets a native filesystem
+
+Most agent platforms give your agent a chat interface and a set of API tools. Castari gives it a real computer — a filesystem, a shell, and a package manager. Your agent can read and write files, install dependencies, execute code, and iterate on its own output. This is what makes agents actually useful to end users: they can generate reports, process uploads, build artifacts, and deliver real files — not just text responses.
+
+### Every session runs in an isolated sandbox
+
+When your customers invoke your agent, each session gets its own isolated sandbox. No user can access another's files or state. Your agent can work freely — running code, writing to disk, installing packages — without you worrying about security, permissions, or one customer's session affecting another. You ship the agent, Castari handles the infrastructure and isolation.
+
+## Install
+
+```bash
+npm install -g @castari/cli
+```
+
+Verify it worked:
+
+```bash
+cast --version
+```
+
+> **Using [Claude Code](https://claude.ai/code)?** Skip the manual setup — type `/castari-deploy` and the skill handles install, auth, scaffolding, and deployment for you. Install it with `npx skills add castari/cli`.
 
 ## Quick Start
 
 ```bash
-npm install -g @castari/cli
+# 1. Authenticate
 cast login
+
+# 2. Scaffold an agent
 cast init my-agent
 cd my-agent
+
+# 3. Deploy to production
 cast deploy
-cast invoke my-agent "Hello, world!"
+
+# 4. Talk to your agent
+cast invoke my-agent "Summarize the top HN stories today"
 ```
 
-## Command Reference
+That's it. Your agent is live, running in an isolated sandbox, accessible via CLI or API.
 
-| Command | Description |
-|---------|-------------|
-| `cast login` | Authenticate via browser (OAuth) |
-| `cast logout` | Clear stored credentials |
-| `cast whoami` | Show current user info |
-| `cast apikey list` | List all API keys |
-| `cast apikey create --name <n>` | Create a named API key |
-| `cast apikey revoke <key-id>` | Revoke an API key |
-| `cast init [template]` | Create a new agent from a template |
-| `cast agents list` | List all agents |
-| `cast agents create <name> <git-url>` | Create an agent from a Git repo |
-| `cast agents get <slug>` | Get agent details |
-| `cast agents update <slug>` | Update agent configuration |
-| `cast agents delete <slug>` | Delete an agent |
-| `cast agents files list <slug>` | List files attached to an agent |
-| `cast agents files add <slug> <file-id>` | Attach a file to an agent |
-| `cast agents files remove <slug> <file-id>` | Detach a file from an agent |
-| `cast deploy [slug]` | Deploy an agent (local project or by slug) |
-| `cast stop <slug>` | Stop a running agent |
-| `cast invoke <slug> "<prompt>"` | Invoke a deployed agent |
-| `cast secrets list <slug>` | List secret keys for an agent |
-| `cast secrets set <slug> <key> <value>` | Set a secret |
-| `cast secrets delete <slug> <key>` | Delete a secret |
-| `cast usage [--days N] [--daily]` | Show usage statistics |
-| `cast sessions list <slug>` | List sessions for an agent |
-| `cast sessions delete <slug> <id>` | Delete a session |
-| `cast invocations list <slug>` | View invocation history |
-| `cast buckets list` | List storage buckets |
-| `cast buckets create` | Create a storage bucket |
-| `cast mounts list <slug>` | List agent mounts |
-| `cast mounts add <slug>` | Mount a bucket to an agent |
-| `cast files list` | List managed files |
-| `cast files upload <path>` | Upload a file |
+## What You Can Build
 
-## SDK
+Castari ships with starter templates to get you going:
 
-The CLI is built on `@castari/sdk`, which you can use directly:
+| Template | What it does |
+|----------|-------------|
+| `cast init --template default` | General-purpose coding assistant with file and bash tools |
+| `cast init --template research-agent` | Web research agent that searches, synthesizes, and reports |
+| `cast init --template mcp-tools` | Agent with custom [MCP](https://modelcontextprotocol.io) tool servers |
+| `cast init --template support-agent` | Customer support agent with knowledge base access |
 
-```bash
-npm install @castari/sdk
+Or start from scratch — any repo with a `castari.json` is deployable.
+
+## How It Works
+
 ```
+You write code         Castari handles infra        Users invoke agents
+┌──────────────┐       ┌───────────────────┐        ┌──────────────────┐
+│ castari.json │       │  cast deploy      │        │  cast invoke     │
+│ src/index.ts │─────▶ │  ┌─────────────┐  │──────▶ │  API / CLI       │
+│              │ push  │  │   Sandbox   │  │ ready  │                  │
+└──────────────┘       │  └─────────────┘  │        └──────────────────┘
+                       └───────────────────┘
+```
+
+1. **Define** — `castari.json` configures your agent (name, entrypoint, runtime). Your agent code uses the Claude Agent SDK with whatever tools, MCP servers, or custom logic you need.
+2. **Deploy** — `cast deploy` packages your project and spins up an isolated sandbox — a real machine with a filesystem, shell access, and your dependencies installed. Your agent is ready to receive prompts.
+3. **Invoke** — Call your agent from the CLI, the REST API, or the [dashboard](https://app.castari.com). Each user session gets its own isolated sandbox.
+
+## Build Your Agent
+
+Castari deploys agents built with the [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview). The SDK gives you the same tools, agent loop, and context management that power Claude Code — programmable in TypeScript.
 
 ```typescript
-import { CastariClient } from '@castari/sdk';
+// src/index.ts
+import { query } from "@anthropic-ai/claude-agent-sdk";
 
-const client = new CastariClient({
-  apiKey: process.env.CASTARI_API_KEY,
-});
-
-// List agents
-const agents = await client.agents.list();
-
-// Deploy and invoke
-await client.agents.deploy('my-agent');
-const result = await client.agents.invoke('my-agent', {
-  prompt: 'Analyze this dataset and summarize key trends.',
-});
-console.log(result.response_content);
-console.log(`Cost: $${result.total_cost_usd}`);
-
-// Manage API keys
-const keys = await client.auth.listApiKeys();
-const newKey = await client.auth.createApiKey('CI/CD');
-
-// Usage statistics
-const summary = await client.usage.summary({ days: 30 });
-
-// Storage
-const buckets = await client.storage.list();
-await client.files.upload('data.csv', buffer);
+for await (const message of query({
+  prompt: "Find and fix the bug in auth.py",
+  options: { allowedTools: ["Read", "Edit", "Bash"] },
+})) {
+  if ("result" in message) console.log(message.result);
+}
 ```
 
-The SDK provides 6 API modules:
-
-| Module | Access | Description |
-|--------|--------|-------------|
-| `client.agents` | `AgentsAPI` | Agent CRUD, deploy, invoke, sessions, invocations, secrets |
-| `client.auth` | `AuthAPI` | User info, API key management |
-| `client.usage` | `UsageAPI` | Usage summaries and daily breakdowns |
-| `client.storage` | `StorageAPI` | BYO storage bucket management |
-| `client.mounts` | `MountsAPI` | Agent-to-bucket mount configuration |
-| `client.files` | `FilesAPI` | Managed file storage (upload, download, attach) |
-
-## Architecture
-
+```bash
+cast deploy
+cast invoke my-agent "Refactor this function to use async/await"
 ```
-castari/cli (pnpm monorepo)
-├── packages/
-│   ├── sdk/              # @castari/sdk — TypeScript SDK
-│   │   └── src/
-│   │       ├── client.ts     # CastariClient entry point
-│   │       ├── agents.ts     # AgentsAPI
-│   │       ├── auth.ts       # AuthAPI
-│   │       ├── usage.ts      # UsageAPI
-│   │       ├── storage.ts    # StorageAPI
-│   │       ├── mounts.ts     # MountsAPI
-│   │       ├── files.ts      # FilesAPI
-│   │       ├── http.ts       # HTTP client with error handling
-│   │       ├── config.ts     # Credential & config management
-│   │       ├── errors.ts     # Error class hierarchy
-│   │       └── types.ts      # All TypeScript interfaces
-│   └── cli/              # @castari/cli — CLI tool
-│       └── src/
-│           ├── index.ts      # Commander program entry
-│           ├── commands/     # One file per command group
-│           └── utils/        # Output formatting, error handling
-└── templates/            # Agent starter templates
-    ├── basic/
-    ├── research/
-    ├── coding-assistant/
-    └── mcp/
+
+Your agent code is your agent. Castari just gets it running in production.
+
+New to the Agent SDK? Check out the [official getting started guide](https://platform.claude.com/docs/en/agent-sdk/overview).
+
+## CLI Commands
+
+The CLI gives you full control over the agent lifecycle:
+
+```bash
+cast login                          # Authenticate via browser
+cast init [template]                # Scaffold a new agent project
+cast deploy [slug]                  # Deploy to production
+cast invoke <slug> "<prompt>"       # Send a prompt to your agent
+cast agents list                    # List all your agents
+cast secrets set <slug> KEY value   # Manage agent secrets
+cast usage                          # Monitor usage and costs
 ```
+
+[Full CLI reference &rarr;](https://docs.castari.com/cli/overview)
 
 ## Configuration
 
-Credentials are stored in `~/.castari/credentials.yaml` (mode 0600).
+Your agent just needs a `castari.json` at the project root:
 
-| Environment Variable | Description |
-|---------------------|-------------|
-| `CASTARI_API_KEY` | API key for authentication |
+```json
+{
+  "name": "my-agent",
+  "version": "0.1.0",
+  "entrypoint": "src/index.ts",
+  "runtime": "node"
+}
+```
+
+The `entrypoint` points to your agent code — a TypeScript file using the [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview).
+
+**Environment variables:**
+
+| Variable | Description |
+|----------|-------------|
+| `CASTARI_API_KEY` | API key for programmatic auth (prefix: `cast_`) |
 | `CASTARI_API_URL` | Override API base URL (default: `https://api.castari.com`) |
 
-## Development
-
-```bash
-# Clone and install
-git clone https://github.com/castari/cli.git
-cd cli
-pnpm install
-
-# Build all packages
-pnpm build
-
-# Run tests
-pnpm test
-
-# Lint and format
-pnpm lint
-pnpm format:check
-
-# Link CLI for local testing
-cd packages/cli && pnpm link --global
-cast --version
-```
+Credentials from `cast login` are stored in `~/.castari/credentials.yaml`.
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and guidelines.
+
+```bash
+git clone https://github.com/castari/cli.git && cd cli
+pnpm install && pnpm build && pnpm test
+```
+
+## Community
+
+- [Documentation](https://docs.castari.com) — Guides, API reference, and examples
+- [Dashboard](https://app.castari.com) — Manage and monitor your agents
+- [Discord](https://discord.gg/castari) — Get help and share what you're building
+- [GitHub Issues](https://github.com/castari/cli/issues) — Bug reports and feature requests
 
 ## License
 
@@ -198,8 +184,6 @@ MIT — see [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-[![SPONSORED BY E2B FOR STARTUPS](https://img.shields.io/badge/SPONSORED%20BY-E2B%20FOR%20STARTUPS-ff8800?style=for-the-badge)](https://e2b.dev/startups)
-&nbsp;&nbsp;
-[![Daytona Startup Grid](./assets/daytona-startup-grid.png)](https://daytona.io)
+**[Get started in 60 seconds &rarr;](https://docs.castari.com/quickstart)**
 
 </div>

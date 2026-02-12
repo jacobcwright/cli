@@ -25,15 +25,13 @@ Castari is the fastest way to go from an AI agent idea to a production deploymen
 
 ## Why Castari
 
-### Your agent gets its own computer
+### Every agent gets a native filesystem
 
-Every deployed agent runs in an isolated cloud sandbox — a real machine with a filesystem, a shell, and a package manager. Your agent can read and write files, install dependencies, run code, and iterate on its own output. It's not a text-completion endpoint with tool definitions bolted on. It's a computer.
+Most agent platforms give your agent a chat interface and a set of API tools. Castari gives it a real computer — a filesystem, a shell, and a package manager. Your agent can read and write files, install dependencies, execute code, and iterate on its own output. This is what makes agents actually useful to end users: they can generate reports, process uploads, build artifacts, and deliver real files — not just text responses.
 
-This is the difference between an agent that *suggests* a fix and one that actually opens the file, edits it, runs the tests, and keeps going until they pass.
+### Every session runs in an isolated sandbox
 
-### No risk to your machine or your users' machines
-
-AI agents that run locally inherit every permission you have — SSH keys, environment variables, credentials, production databases. One prompt injection or hallucinated command and the blast radius is your entire system. Castari eliminates this by running agents in isolated sandboxes where they can work freely without putting anything else at risk. No permission prompts. No `--dangerously-skip-permissions`. Just a safe environment where agents can do real work.
+When your customers invoke your agent, each session gets its own isolated sandbox. No user can access another's files or state. Your agent can work freely — running code, writing to disk, installing packages — without you worrying about security, permissions, or one customer's session affecting another. You ship the agent, Castari handles the infrastructure and isolation.
 
 ## Install
 
@@ -95,7 +93,7 @@ You write code          Castari handles infra         Users invoke agents
 
 1. **Define** — `castari.json` configures your agent (name, entrypoint, runtime). Your agent code uses the Claude Agent SDK with whatever tools, MCP servers, or custom logic you need.
 2. **Deploy** — `cast deploy` packages your project and spins up an isolated sandbox — a real machine with a filesystem, shell access, and your dependencies installed. Your agent is ready to receive prompts.
-3. **Invoke** — Call your agent from the CLI, the REST API, or the [dashboard](https://app.castari.com). Each session gets its own sandbox, so agents can work with files and state without stepping on each other.
+3. **Invoke** — Call your agent from the CLI, the REST API, or the [dashboard](https://app.castari.com). Each user session gets its own isolated sandbox.
 
 ## Build Your Agent
 

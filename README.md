@@ -85,22 +85,18 @@ You write code          Castari handles infra         Users invoke agents
 
 ## Build Your Agent
 
-Castari deploys agents built with the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk). Write your agent in TypeScript, give it tools, connect MCP servers — then deploy it with a single command.
+Castari deploys agents built with the [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/agent-sdk). The SDK gives you the same tools, agent loop, and context management that power Claude Code — programmable in TypeScript.
 
 ```typescript
 // src/index.ts
-import Anthropic from "@anthropic-ai/sdk";
+import { query } from "@anthropic-ai/claude-agent-sdk";
 
-const client = new Anthropic();
-
-const response = await client.messages.create({
-  model: "claude-sonnet-4-5-20250929",
-  max_tokens: 1024,
-  system: "You are a helpful coding assistant.",
-  messages: [{ role: "user", content: process.argv[2] }],
-});
-
-console.log(response.content[0].text);
+for await (const message of query({
+  prompt: "Find and fix the bug in auth.py",
+  options: { allowedTools: ["Read", "Edit", "Bash"] },
+})) {
+  if ("result" in message) console.log(message.result);
+}
 ```
 
 ```bash

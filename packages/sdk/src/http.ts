@@ -319,10 +319,7 @@ export class HttpClient {
         throw new ValidationError(message);
       case 429: {
         const retryAfter = headers.get('Retry-After');
-        throw new RateLimitError(
-          message,
-          retryAfter ? parseInt(retryAfter, 10) : undefined
-        );
+        throw new RateLimitError(message, retryAfter ? parseInt(retryAfter, 10) : undefined);
       }
       case 500:
       case 502:

@@ -150,27 +150,21 @@ describe('HttpClient', () => {
 
   describe('error handling', () => {
     it('throws AuthenticationError for 401', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(401, { detail: 'Invalid API key' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(401, { detail: 'Invalid API key' }));
 
       await expect(client.request('GET', '/agents')).rejects.toThrow(AuthenticationError);
       await expect(client.request('GET', '/agents')).rejects.toThrow('Invalid API key');
     });
 
     it('throws NotFoundError for 404', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(404, { detail: 'Agent not found' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(404, { detail: 'Agent not found' }));
 
       await expect(client.request('GET', '/agents/missing')).rejects.toThrow(NotFoundError);
       await expect(client.request('GET', '/agents/missing')).rejects.toThrow('Agent not found');
     });
 
     it('throws ValidationError for 422', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(422, { detail: 'Invalid slug format' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(422, { detail: 'Invalid slug format' }));
 
       await expect(client.request('POST', '/agents', { body: {} })).rejects.toThrow(
         ValidationError
@@ -196,9 +190,7 @@ describe('HttpClient', () => {
     });
 
     it('throws RateLimitError for 429 without retryAfter', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(429, { detail: 'Too many requests' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(429, { detail: 'Too many requests' }));
 
       try {
         await client.request('GET', '/agents');
@@ -210,9 +202,7 @@ describe('HttpClient', () => {
     });
 
     it('throws BadRequestError for 400', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(400, { detail: 'Missing required field' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(400, { detail: 'Missing required field' }));
 
       await expect(client.request('POST', '/agents', { body: {} })).rejects.toThrow(
         BadRequestError
@@ -223,43 +213,33 @@ describe('HttpClient', () => {
     });
 
     it('throws ServerError for 500', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(500, { detail: 'Internal server error' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(500, { detail: 'Internal server error' }));
 
       await expect(client.request('GET', '/agents')).rejects.toThrow(ServerError);
       await expect(client.request('GET', '/agents')).rejects.toThrow('Internal server error');
     });
 
     it('throws ServerError for 502', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(502, { detail: 'Bad gateway' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(502, { detail: 'Bad gateway' }));
 
       await expect(client.request('GET', '/agents')).rejects.toThrow(ServerError);
     });
 
     it('throws ServerError for 503', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(503, { detail: 'Service unavailable' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(503, { detail: 'Service unavailable' }));
 
       await expect(client.request('GET', '/agents')).rejects.toThrow(ServerError);
     });
 
     it('throws CastariError for other status codes', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(418, { detail: 'I am a teapot' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(418, { detail: 'I am a teapot' }));
 
       await expect(client.request('GET', '/agents')).rejects.toThrow(CastariError);
       await expect(client.request('GET', '/agents')).rejects.toThrow('I am a teapot');
     });
 
     it('uses fallback message when detail is not present', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(500, {})
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(500, {}));
 
       await expect(client.request('GET', '/agents')).rejects.toThrow('An error occurred');
     });
@@ -350,9 +330,7 @@ describe('HttpClient', () => {
         authValue: 'oauth-token-123',
       });
       await tokenClient.request('GET', '/agents');
-      expect(mockFetch.mock.calls[0][1].headers['Authorization']).toBe(
-        'Bearer oauth-token-123'
-      );
+      expect(mockFetch.mock.calls[0][1].headers['Authorization']).toBe('Bearer oauth-token-123');
     });
   });
 
@@ -417,9 +395,7 @@ describe('HttpClient', () => {
     });
 
     it('throws errors for non-ok responses', async () => {
-      mockFetch.mockResolvedValue(
-        createJsonResponse(404, { detail: 'Not found' })
-      );
+      mockFetch.mockResolvedValue(createJsonResponse(404, { detail: 'Not found' }));
 
       await expect(client.rawRequest('GET', '/agents/missing')).rejects.toThrow(NotFoundError);
     });
@@ -482,18 +458,18 @@ describe('HttpClient', () => {
       mockFetch.mockRejectedValue(abortError);
 
       const formData = new FormData();
-      await expect(
-        client.requestMultipart('POST', '/upload', formData)
-      ).rejects.toThrow('Upload timed out');
+      await expect(client.requestMultipart('POST', '/upload', formData)).rejects.toThrow(
+        'Upload timed out'
+      );
     });
 
     it('throws CastariError with "Upload failed" on generic error', async () => {
       mockFetch.mockRejectedValue(new Error('Connection reset'));
 
       const formData = new FormData();
-      await expect(
-        client.requestMultipart('POST', '/upload', formData)
-      ).rejects.toThrow('Upload failed: Connection reset');
+      await expect(client.requestMultipart('POST', '/upload', formData)).rejects.toThrow(
+        'Upload failed: Connection reset'
+      );
     });
   });
 

@@ -1,10 +1,5 @@
 import type { HttpClient } from './http.js';
-import type {
-  Mount,
-  MountListResponse,
-  AddMountOptions,
-  UpdateMountOptions,
-} from './types.js';
+import type { Mount, MountListResponse, AddMountOptions, UpdateMountOptions } from './types.js';
 
 /**
  * API for managing agent mounts
@@ -63,11 +58,9 @@ export class MountsAPI {
       body.cache_ttl_seconds = options.cacheTtlSeconds;
     }
 
-    return this.client.request<Mount>(
-      'POST',
-      `/agents/${encodeURIComponent(agentSlug)}/mounts`,
-      { body }
-    );
+    return this.client.request<Mount>('POST', `/agents/${encodeURIComponent(agentSlug)}/mounts`, {
+      body,
+    });
   }
 
   /**
@@ -127,9 +120,6 @@ export class MountsAPI {
    * @param agentSlug - The agent's unique slug
    */
   async syncMounts(agentSlug: string): Promise<void> {
-    return this.client.request<void>(
-      'POST',
-      `/agents/${encodeURIComponent(agentSlug)}/files/sync`
-    );
+    return this.client.request<void>('POST', `/agents/${encodeURIComponent(agentSlug)}/files/sync`);
   }
 }

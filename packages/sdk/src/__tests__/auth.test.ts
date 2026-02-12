@@ -153,10 +153,7 @@ describe('AuthAPI', () => {
 
       await auth.revokeApiKey('key with spaces');
 
-      expect(mockClient.request).toHaveBeenCalledWith(
-        'DELETE',
-        '/api-keys/key%20with%20spaces'
-      );
+      expect(mockClient.request).toHaveBeenCalledWith('DELETE', '/api-keys/key%20with%20spaces');
     });
 
     it('calls DELETE /auth/api-key (legacy) when no keyId is provided', async () => {

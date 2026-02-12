@@ -50,7 +50,11 @@ const listCommand = new Command('list')
           inv.id.length > 16 ? inv.id.substring(0, 13) + '...' : inv.id,
           statusColor(inv.status),
           `${formatNumber(inv.input_tokens)}/${formatNumber(inv.output_tokens)}`,
-          formatCost(typeof inv.total_cost_usd === 'string' ? parseFloat(inv.total_cost_usd) : inv.total_cost_usd),
+          formatCost(
+            typeof inv.total_cost_usd === 'string'
+              ? parseFloat(inv.total_cost_usd)
+              : inv.total_cost_usd
+          ),
           `${inv.duration_ms}ms`,
           formatDate(inv.created_at),
         ]);

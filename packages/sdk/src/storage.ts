@@ -122,10 +122,7 @@ export class StorageAPI {
    * @param slug - The bucket's unique slug
    */
   async deleteCredentials(slug: string): Promise<void> {
-    return this.client.request<void>(
-      'DELETE',
-      `/buckets/${encodeURIComponent(slug)}/credentials`
-    );
+    return this.client.request<void>('DELETE', `/buckets/${encodeURIComponent(slug)}/credentials`);
   }
 
   /**

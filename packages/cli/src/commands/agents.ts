@@ -3,7 +3,16 @@ import ora from 'ora';
 import Table from 'cli-table3';
 import chalk from 'chalk';
 import { CastariClient } from '@castari/sdk';
-import { success, error, hint, keyValue, blank, formatDate, info, formatNumber } from '../utils/output.js';
+import {
+  success,
+  error,
+  hint,
+  keyValue,
+  blank,
+  formatDate,
+  info,
+  formatNumber,
+} from '../utils/output.js';
 import { handleError } from '../utils/errors.js';
 
 /**
@@ -39,52 +48,50 @@ function formatStatus(status: string): string {
 /**
  * cast agents list
  */
-const listCommand = new Command('list')
-  .description('List all agents')
-  .action(async () => {
-    const spinner = ora('Fetching agents...').start();
+const listCommand = new Command('list').description('List all agents').action(async () => {
+  const spinner = ora('Fetching agents...').start();
 
-    try {
-      const client = new CastariClient();
-      await client.ensureAuthenticated();
-      const agents = await client.agents.list();
+  try {
+    const client = new CastariClient();
+    await client.ensureAuthenticated();
+    const agents = await client.agents.list();
 
-      spinner.stop();
+    spinner.stop();
 
-      if (agents.length === 0) {
-        info('No agents found');
-        hint("Create one with 'cast agents create <name> <git-url>'");
-        return;
-      }
-
-      const table = new Table({
-        head: [
-          chalk.white('Slug'),
-          chalk.white('Name'),
-          chalk.white('Status'),
-          chalk.white('Created'),
-        ],
-        style: {
-          head: [],
-          border: [],
-        },
-      });
-
-      for (const agent of agents) {
-        table.push([
-          agent.slug,
-          agent.name,
-          formatStatus(agent.status),
-          formatDate(agent.created_at),
-        ]);
-      }
-
-      console.log(table.toString());
-    } catch (err) {
-      spinner.fail('Failed to list agents');
-      handleError(err);
+    if (agents.length === 0) {
+      info('No agents found');
+      hint("Create one with 'cast agents create <name> <git-url>'");
+      return;
     }
-  });
+
+    const table = new Table({
+      head: [
+        chalk.white('Slug'),
+        chalk.white('Name'),
+        chalk.white('Status'),
+        chalk.white('Created'),
+      ],
+      style: {
+        head: [],
+        border: [],
+      },
+    });
+
+    for (const agent of agents) {
+      table.push([
+        agent.slug,
+        agent.name,
+        formatStatus(agent.status),
+        formatDate(agent.created_at),
+      ]);
+    }
+
+    console.log(table.toString());
+  } catch (err) {
+    spinner.fail('Failed to list agents');
+    handleError(err);
+  }
+});
 
 /**
  * cast agents create <name> <git-url>
@@ -205,44 +212,49 @@ const updateCommand = new Command('update')
   .option('--model <model>', 'Default model')
   .option('--max-turns <turns>', 'Maximum turns per invocation')
   .option('--timeout <seconds>', 'Timeout in seconds')
-  .action(async (slug: string, options: {
-    name?: string;
-    description?: string;
-    gitUrl?: string;
-    gitBranch?: string;
-    model?: string;
-    maxTurns?: string;
-    timeout?: string;
-  }) => {
-    const spinner = ora('Updating agent...').start();
+  .action(
+    async (
+      slug: string,
+      options: {
+        name?: string;
+        description?: string;
+        gitUrl?: string;
+        gitBranch?: string;
+        model?: string;
+        maxTurns?: string;
+        timeout?: string;
+      }
+    ) => {
+      const spinner = ora('Updating agent...').start();
 
-    try {
-      const client = new CastariClient();
-      await client.ensureAuthenticated();
+      try {
+        const client = new CastariClient();
+        await client.ensureAuthenticated();
 
-      const agent = await client.agents.update(slug, {
-        name: options.name,
-        description: options.description,
-        gitRepoUrl: options.gitUrl,
-        gitBranch: options.gitBranch,
-        defaultModel: options.model,
-        maxTurns: options.maxTurns ? parseInt(options.maxTurns, 10) : undefined,
-        timeoutSeconds: options.timeout ? parseInt(options.timeout, 10) : undefined,
-      });
+        const agent = await client.agents.update(slug, {
+          name: options.name,
+          description: options.description,
+          gitRepoUrl: options.gitUrl,
+          gitBranch: options.gitBranch,
+          defaultModel: options.model,
+          maxTurns: options.maxTurns ? parseInt(options.maxTurns, 10) : undefined,
+          timeoutSeconds: options.timeout ? parseInt(options.timeout, 10) : undefined,
+        });
 
-      spinner.succeed(`Agent '${slug}' updated`);
-      blank();
-      keyValue('Name', agent.name);
-      keyValue('Status', formatStatus(agent.status));
-      keyValue('Model', agent.default_model);
-      keyValue('Max Turns', agent.max_turns);
-      keyValue('Timeout', `${agent.timeout_seconds}s`);
-      blank();
-    } catch (err) {
-      spinner.fail('Failed to update agent');
-      handleError(err);
+        spinner.succeed(`Agent '${slug}' updated`);
+        blank();
+        keyValue('Name', agent.name);
+        keyValue('Status', formatStatus(agent.status));
+        keyValue('Model', agent.default_model);
+        keyValue('Max Turns', agent.max_turns);
+        keyValue('Timeout', `${agent.timeout_seconds}s`);
+        blank();
+      } catch (err) {
+        spinner.fail('Failed to update agent');
+        handleError(err);
+      }
     }
-  });
+  );
 
 // ============================================================================
 // Agent Files Subcommands
@@ -267,7 +279,7 @@ const filesListCommand = new Command('list')
 
       if (result.files.length === 0) {
         info(`No files attached to agent '${slug}'`);
-        hint("Attach a file with: cast agents files add <slug> <file_id>");
+        hint('Attach a file with: cast agents files add <slug> <file_id>');
         return;
       }
 
@@ -289,9 +301,7 @@ const filesListCommand = new Command('list')
       for (const file of result.files) {
         table.push([
           file.file_id,
-          file.filename.length > 22
-            ? file.filename.substring(0, 19) + '...'
-            : file.filename,
+          file.filename.length > 22 ? file.filename.substring(0, 19) + '...' : file.filename,
           file.mount_path,
           formatSize(file.size_bytes),
           file.read_only ? chalk.gray('ro') : chalk.green('rw'),
@@ -319,11 +329,7 @@ const filesAddCommand = new Command('add')
   .option('--mount-path <path>', 'Custom mount path (default: /files/agent/<filename>)')
   .option('--writable', 'Make file writable (default: read-only)')
   .action(
-    async (
-      slug: string,
-      fileId: string,
-      options: { mountPath?: string; writable?: boolean }
-    ) => {
+    async (slug: string, fileId: string, options: { mountPath?: string; writable?: boolean }) => {
       const spinner = ora('Attaching file...').start();
 
       try {
@@ -359,45 +365,41 @@ const filesRemoveCommand = new Command('remove')
   .argument('<slug>', 'Agent slug')
   .argument('<file_id>', 'File ID to detach')
   .option('-f, --force', 'Skip confirmation')
-  .action(
-    async (slug: string, fileId: string, options: { force?: boolean }) => {
-      try {
-        const client = new CastariClient();
-        await client.ensureAuthenticated();
+  .action(async (slug: string, fileId: string, options: { force?: boolean }) => {
+    try {
+      const client = new CastariClient();
+      await client.ensureAuthenticated();
 
-        // Confirm removal unless --force is used
-        if (!options.force) {
-          const readline = await import('node:readline');
-          const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-          });
+      // Confirm removal unless --force is used
+      if (!options.force) {
+        const readline = await import('node:readline');
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
 
-          const answer = await new Promise<string>((resolve) => {
-            rl.question(
-              chalk.yellow(
-                `Detach file '${fileId}' from agent '${slug}'? [y/N] `
-              ),
-              resolve
-            );
-          });
-          rl.close();
+        const answer = await new Promise<string>((resolve) => {
+          rl.question(
+            chalk.yellow(`Detach file '${fileId}' from agent '${slug}'? [y/N] `),
+            resolve
+          );
+        });
+        rl.close();
 
-          if (answer.toLowerCase() !== 'y' && answer.toLowerCase() !== 'yes') {
-            info('Detachment cancelled');
-            return;
-          }
+        if (answer.toLowerCase() !== 'y' && answer.toLowerCase() !== 'yes') {
+          info('Detachment cancelled');
+          return;
         }
-
-        const spinner = ora('Detaching file...').start();
-
-        await client.files.detachFromAgent(slug, fileId);
-        spinner.succeed(`File '${fileId}' detached from agent '${slug}'`);
-      } catch (err) {
-        handleError(err);
       }
+
+      const spinner = ora('Detaching file...').start();
+
+      await client.files.detachFromAgent(slug, fileId);
+      spinner.succeed(`File '${fileId}' detached from agent '${slug}'`);
+    } catch (err) {
+      handleError(err);
     }
-  );
+  });
 
 /**
  * cast agents files

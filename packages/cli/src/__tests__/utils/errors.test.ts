@@ -29,14 +29,11 @@ describe('handleError', () => {
     handleError(new AuthenticationError());
 
     // error() from output.ts calls console.error
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      'Authentication failed',
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.anything(), 'Authentication failed');
     // hint() from output.ts calls console.log with the login suggestion
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.anything(),
-      expect.stringContaining("Run 'cast login' to authenticate"),
+      expect.stringContaining("Run 'cast login' to authenticate")
     );
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
@@ -44,13 +41,10 @@ describe('handleError', () => {
   it('should handle NotFoundError and print not found message', () => {
     handleError(new NotFoundError('Agent not found'));
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      'Agent not found',
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.anything(), 'Agent not found');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.anything(),
-      expect.stringContaining("Run 'cast agents list' to see your agents"),
+      expect.stringContaining("Run 'cast agents list' to see your agents")
     );
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
@@ -58,23 +52,17 @@ describe('handleError', () => {
   it('should handle NotFoundError with default message', () => {
     handleError(new NotFoundError());
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      'Resource not found.',
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.anything(), 'Resource not found.');
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
   it('should handle RateLimitError without retryAfter', () => {
     handleError(new RateLimitError());
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      'Rate limit exceeded',
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.anything(), 'Rate limit exceeded');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.anything(),
-      expect.stringContaining('Try again in a few moments'),
+      expect.stringContaining('Try again in a few moments')
     );
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
@@ -82,13 +70,10 @@ describe('handleError', () => {
   it('should handle RateLimitError with retryAfter', () => {
     handleError(new RateLimitError('Rate limit exceeded.', 30));
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      'Rate limit exceeded',
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.anything(), 'Rate limit exceeded');
     expect(consoleLogSpy).toHaveBeenCalledWith(
       expect.anything(),
-      expect.stringContaining('Try again in 30 seconds'),
+      expect.stringContaining('Try again in 30 seconds')
     );
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
@@ -98,7 +83,7 @@ describe('handleError', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       expect.anything(),
-      'Validation error: Field "name" is required',
+      'Validation error: Field "name" is required'
     );
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
@@ -108,7 +93,7 @@ describe('handleError', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       expect.anything(),
-      'Bad request: Invalid JSON body',
+      'Bad request: Invalid JSON body'
     );
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
@@ -116,40 +101,28 @@ describe('handleError', () => {
   it('should handle generic CastariError and print its message', () => {
     handleError(new CastariError('Something went wrong'));
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      'Something went wrong',
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.anything(), 'Something went wrong');
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
   it('should handle generic Error and print its message', () => {
     handleError(new Error('ECONNREFUSED'));
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      'ECONNREFUSED',
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.anything(), 'ECONNREFUSED');
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
   it('should handle unknown non-error values with unexpected error message', () => {
     handleError('some string');
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      'An unexpected error occurred',
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.anything(), 'An unexpected error occurred');
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 
   it('should handle null with unexpected error message', () => {
     handleError(null);
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      expect.anything(),
-      'An unexpected error occurred',
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith(expect.anything(), 'An unexpected error occurred');
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 

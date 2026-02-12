@@ -1,5 +1,10 @@
 import type { HttpClient } from './http.js';
-import type { UsageSummary, UsageSummaryResponse, DailyUsage, DailyUsageResponse } from './types.js';
+import type {
+  UsageSummary,
+  UsageSummaryResponse,
+  DailyUsage,
+  DailyUsageResponse,
+} from './types.js';
 
 /**
  * API for accessing usage statistics

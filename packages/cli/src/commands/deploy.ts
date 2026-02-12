@@ -133,9 +133,7 @@ function shouldIgnore(filePath: string, patterns: string[]): boolean {
       }
     } else if (pattern.includes('*')) {
       // Wildcard pattern
-      const regex = new RegExp(
-        '^' + pattern.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$'
-      );
+      const regex = new RegExp('^' + pattern.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
       if (regex.test(filePath) || regex.test(path.basename(filePath))) {
         return true;
       }
@@ -204,9 +202,7 @@ export const deployCommand = new Command('deploy')
         try {
           tarballPath = await createTarball(projectDir);
           const stats = fs.statSync(tarballPath);
-          tarSpinner.succeed(
-            `Packaged project (${(stats.size / 1024).toFixed(1)} KB)`
-          );
+          tarSpinner.succeed(`Packaged project (${(stats.size / 1024).toFixed(1)} KB)`);
         } catch (err) {
           tarSpinner.fail('Failed to package project');
           throw err;

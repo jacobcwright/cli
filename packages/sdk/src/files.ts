@@ -58,10 +58,7 @@ export class FilesAPI {
    * @throws NotFoundError if file doesn't exist
    */
   async get(fileId: string): Promise<ManagedFile> {
-    return this.client.request<ManagedFile>(
-      'GET',
-      `/files/${encodeURIComponent(fileId)}`
-    );
+    return this.client.request<ManagedFile>('GET', `/files/${encodeURIComponent(fileId)}`);
   }
 
   /**
@@ -110,11 +107,9 @@ export class FilesAPI {
       body.tags = options.tags;
     }
 
-    return this.client.request<ManagedFile>(
-      'PATCH',
-      `/files/${encodeURIComponent(fileId)}`,
-      { body }
-    );
+    return this.client.request<ManagedFile>('PATCH', `/files/${encodeURIComponent(fileId)}`, {
+      body,
+    });
   }
 
   /**
@@ -123,10 +118,7 @@ export class FilesAPI {
    * @throws NotFoundError if file doesn't exist
    */
   async delete(fileId: string): Promise<void> {
-    return this.client.request<void>(
-      'DELETE',
-      `/files/${encodeURIComponent(fileId)}`
-    );
+    return this.client.request<void>('DELETE', `/files/${encodeURIComponent(fileId)}`);
   }
 
   /**
@@ -135,10 +127,7 @@ export class FilesAPI {
    * @returns The raw Response with file content
    */
   async download(fileId: string): Promise<Response> {
-    return this.client.rawRequest(
-      'GET',
-      `/files/${encodeURIComponent(fileId)}/content`
-    );
+    return this.client.rawRequest('GET', `/files/${encodeURIComponent(fileId)}/content`);
   }
 
   /**
@@ -231,10 +220,7 @@ export class FilesAPI {
    * @param options - Attachment options (fileId, mountPath, readOnly)
    * @returns The attached file details
    */
-  async attachToAgent(
-    agentSlug: string,
-    options: AttachFileOptions
-  ): Promise<AgentFile> {
+  async attachToAgent(agentSlug: string, options: AttachFileOptions): Promise<AgentFile> {
     const body: Record<string, unknown> = {
       file_id: options.fileId,
     };

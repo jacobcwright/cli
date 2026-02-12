@@ -89,31 +89,33 @@ function downloadTarball(url: string, destPath: string): Promise<void> {
     });
 
     const request = (reqUrl: string) => {
-      https.get(reqUrl, (response) => {
-        // Handle redirects
-        if (response.statusCode === 301 || response.statusCode === 302) {
-          const redirectUrl = response.headers.location;
-          if (redirectUrl) {
-            request(redirectUrl);
+      https
+        .get(reqUrl, (response) => {
+          // Handle redirects
+          if (response.statusCode === 301 || response.statusCode === 302) {
+            const redirectUrl = response.headers.location;
+            if (redirectUrl) {
+              request(redirectUrl);
+              return;
+            }
+          }
+
+          if (response.statusCode !== 200) {
+            file.close();
+            reject(new Error(`Failed to download: HTTP ${response.statusCode}`));
             return;
           }
-        }
 
-        if (response.statusCode !== 200) {
-          file.close();
-          reject(new Error(`Failed to download: HTTP ${response.statusCode}`));
-          return;
-        }
-
-        response.pipe(file);
-        file.on('finish', () => {
-          file.close();
-          resolve();
+          response.pipe(file);
+          file.on('finish', () => {
+            file.close();
+            resolve();
+          });
+        })
+        .on('error', (err) => {
+          fsExtra.unlink(destPath).catch(() => {}); // Clean up partial file
+          reject(err);
         });
-      }).on('error', (err) => {
-        fsExtra.unlink(destPath).catch(() => {}); // Clean up partial file
-        reject(err);
-      });
     };
 
     request(url);
@@ -123,10 +125,7 @@ function downloadTarball(url: string, destPath: string): Promise<void> {
 /**
  * Download template from GitHub
  */
-async function downloadTemplateFromGitHub(
-  templateName: string,
-  targetDir: string
-): Promise<void> {
+async function downloadTemplateFromGitHub(templateName: string, targetDir: string): Promise<void> {
   const tempDir = path.join(os.tmpdir(), `castari-template-${Date.now()}`);
   const tarballPath = path.join(tempDir, 'repo.tar.gz');
 
@@ -180,9 +179,7 @@ async function copyLocalTemplate(
   const templateSource = path.join(localTemplatesDir, templateName);
 
   if (!fsExtra.existsSync(templateSource)) {
-    throw new Error(
-      `Template '${templateName}' not found at ${templateSource}`
-    );
+    throw new Error(`Template '${templateName}' not found at ${templateSource}`);
   }
 
   await fsExtra.copy(templateSource, targetDir);
@@ -191,10 +188,7 @@ async function copyLocalTemplate(
 /**
  * Replace template variables in all files
  */
-async function replaceVariables(
-  dir: string,
-  vars: Record<string, string>
-): Promise<void> {
+async function replaceVariables(dir: string, vars: Record<string, string>): Promise<void> {
   const entries = await fsExtra.readdir(dir, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -328,7 +322,9 @@ export const initCommand = new Command('init')
         version: '0.1.0',
       });
 
-      spinner.succeed(`Created ${chalk.cyan(projectName)}/ from ${chalk.cyan(selectedTemplate)} template`);
+      spinner.succeed(
+        `Created ${chalk.cyan(projectName)}/ from ${chalk.cyan(selectedTemplate)} template`
+      );
     } catch (err) {
       spinner.fail('Failed to create project');
       if (err instanceof Error) {
